@@ -1,7 +1,6 @@
 // backend/index.js
 require('dotenv').config();
 const express = require('express');
-
 const app = express();
 const port = 3001; // You can change this to another port if needed
 
@@ -9,11 +8,9 @@ const port = 3001; // You can change this to another port if needed
 app.use(express.json());
 
 // Example route
-app.get('/', (req, res) => {
-  res.send('Hello from the backend!');
-});
-
-seq
+app.use ('/api/transactions', require('./routes/transactionRoutes'))
+//app.use ('/api/products', require('./routes/productRoutes'))
+//app.use ('/api/inventory', require('./routes/inventoryRoutes'))
 
 // Start the server
 app.listen(port, () => {
