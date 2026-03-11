@@ -8,8 +8,16 @@ const port = 3001; // You can change this to another port if needed
 app.use(express.json());
 
 // Example route
+
+//Transaction Routes
 app.use ('/api/transactions', require('./routes/transactionRoutes'))
 app.use ('/api/merchTransactions', require('./routes/merchTransactionRoutes'))
+app.use ('/api/custTransactions', require('./routes/custTransactionRoutes'))
+
+//Customer Routes
+app.use ('/api/customer', require('./routes/custRoutes'))
+
+
 //app.use ('/api/products', require('./routes/productRoutes'))
 //app.use ('/api/inventory', require('./routes/inventoryRoutes'))
 

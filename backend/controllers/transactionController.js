@@ -15,7 +15,8 @@ const TransactionController = {
         } catch (error) {
             console.log("fail to get data")
             res.status(404).json ({
-                message : "No Transactions Found Using PG"
+                message : "No Transactions Found Using PG",
+                error: error.message
             })
             
         }
@@ -31,7 +32,8 @@ const TransactionController = {
         } catch(error) {
             console.log("Fall into here")
             res.status(404).json ({
-                message : "No Transactions Found Using ORM"
+                message : "No Transactions Found Using ORM",
+                error: error.message
             })
         }
     },
@@ -50,7 +52,8 @@ const TransactionController = {
             })
         } catch(error){
             res.status(404).json({
-                message : `Transaction ${txn_id} cannot be found Using PG`
+                message : `Transaction ${txn_id} cannot be found Using PG`,
+                error: error.message
             })
         }
     },
@@ -70,7 +73,8 @@ const TransactionController = {
           
         } catch(error){
             res.status(404).json({
-                message : `Transaction ${txn_id} cannot be found using ORM.`
+                message : `Transaction ${txn_id} cannot be found using ORM.`,
+                error: error.message
             })
         }
     },
@@ -94,7 +98,8 @@ const TransactionController = {
 
         }catch(error) {
             res.status(404).json ({
-                message : "Transaction failed to be added Using PG."
+                message : "Transaction failed to be added Using PG.",
+                error: error.message
             })
         }
     },
@@ -119,7 +124,8 @@ const TransactionController = {
 
         }catch(error) {
             res.status(404).json ({
-                message : "Transaction failed to be added Using ORM."
+                message : "Transaction failed to be added Using ORM.",
+                error: error.message
             })
         }
     },
@@ -133,7 +139,8 @@ const TransactionController = {
             const rows = await db.pgQuery(queryText, [txn_id])
 
             res.status(200).json ({
-                message : `Transaction ${txn_id} has been deleted using PG.`
+                message : `Transaction ${txn_id} has been deleted using PG.`,
+                error: error.message
             })
 
         } catch (error) {
