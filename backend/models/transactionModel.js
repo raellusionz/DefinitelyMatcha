@@ -2,10 +2,22 @@ const {Sequelize, DataTypes} = require('sequelize');
 const {sequelize} = require('../config/db');  
 
 const TransactionModel  = sequelize.define('TransactionModel',{
-    txn_id : {
+    global_txn_id : {
         type : DataTypes.INTEGER,
         primaryKey : true,
         autoIncrement : true,
+    },
+    merchant_txn_id : {
+        type : DataTypes.INTEGER,
+        allowNull : false
+    },
+    cust_id  : {
+        type : DataTypes.INTEGER,
+        allowNull : false
+    },
+    merchant_id : {
+        type : DataTypes.INTEGER,
+        allowNull : false
     },
     pdt_qty : {
         type : DataTypes.INTEGER,
@@ -28,6 +40,7 @@ const TransactionModel  = sequelize.define('TransactionModel',{
     tableName : 'transactions',
     timestamps : false
 });
+
 
 // Sync the model with the database
 sequelize.sync()
