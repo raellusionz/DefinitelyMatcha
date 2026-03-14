@@ -1,8 +1,8 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../config/db');  
+const {Sequelize, DataTypes} = require('sequelize');
+const {sequelize} = require('../config/db');
 
 const ProductModel = sequelize.define('ProductModel',{
-    pdt_id : {
+    global_pdt_id : {
         type : DataTypes.INTEGER,
         primaryKey : true,
         autoIncrement : true
@@ -27,12 +27,18 @@ const ProductModel = sequelize.define('ProductModel',{
         type : DataTypes.DECIMAL(10,2),
         allowNull : false
     },
+    pdt_desc : {
+        type : DataTypes.STRING(255),
+        allowNull : true
+    },
     active : {
         type : DataTypes.BOOLEAN,
-        allowNull : false
+        allowNull : false,
+        defaultValue: false
     },
 },{
-    tableName : 'products'
+    tableName : 'products',
+    timestamps : false
 });
 
 // Sync the model with the database

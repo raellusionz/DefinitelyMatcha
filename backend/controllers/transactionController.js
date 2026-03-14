@@ -139,8 +139,7 @@ const TransactionController = {
             const rows = await db.pgQuery(queryText, [txn_id])
 
             res.status(200).json ({
-                message : `Transaction ${txn_id} has been deleted using PG.`,
-                error: error.message
+                message : `Transaction ${txn_id} has been deleted using PG.`
             })
 
         } catch (error) {

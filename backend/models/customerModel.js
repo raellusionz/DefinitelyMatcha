@@ -18,7 +18,6 @@ const CustomerModel = sequelize.define('CustomerModel',{
 }, {
     tableName : 'customer',
     timestamps : false
-
 });
 
 // Sync the model with the database

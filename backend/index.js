@@ -17,9 +17,10 @@ app.use ('/api/custTransactions', require('./routes/custTransactionRoutes'))
 //Customer Routes
 app.use ('/api/customer', require('./routes/custRoutes'))
 
+//Product Routes
+app.use ('/api/products', require('./routes/productRoutes'))
 
-//app.use ('/api/products', require('./routes/productRoutes'))
-//app.use ('/api/inventory', require('./routes/inventoryRoutes'))
+app.use ('/api/orders', require('./routes/orderRoutes'))
 
 // Start the server
 app.listen(port, () => {

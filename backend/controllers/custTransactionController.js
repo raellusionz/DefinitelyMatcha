@@ -65,7 +65,6 @@ const CustTransactionController = {
                 message : "No Transactions Found using PG",
                 error: error.message
             })
-            
         }
     },
 

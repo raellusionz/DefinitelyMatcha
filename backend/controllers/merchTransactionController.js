@@ -116,7 +116,7 @@ const MerchTransactionController = {
             })
 
         }catch(error) {
-            res.status(404).json ({
+            res.status(400).json ({
                 message : "Transaction failed to be added Using PG.",
                 error: error.message
             })
@@ -152,7 +152,7 @@ const MerchTransactionController = {
             })
 
         }catch(error) {
-            res.status(404).json ({
+            res.status(400).json ({
                 message : "Transaction failed to be added Using ORM.",
                 error: error.message
             })
