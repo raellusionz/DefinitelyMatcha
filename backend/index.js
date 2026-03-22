@@ -1,11 +1,13 @@
 // backend/index.js
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');  
 const app = express();
 const port = 3001; // You can change this to another port if needed
 
 // Middleware to parse incoming JSON requests
 app.use(express.json());
+app.use(cors());
 
 // Example route
 
