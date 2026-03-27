@@ -23,6 +23,7 @@ app.use ('/api/customer', require('./routes/custRoutes'))
 app.use ('/api/products', require('./routes/productRoutes'))
 
 app.use ('/api/orders', require('./routes/orderRoutes'))
+app.use ('/api/merchants', require('./routes/merchantRoutes'))
 
 // Start the server
 app.listen(port, () => {

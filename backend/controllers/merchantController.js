@@ -90,6 +90,25 @@ const MerchantController = {
                 error: error.message
             });
         }
+    },
+
+    getAllMerchantNamesPg : async (req, res) => {
+        try {
+            const queryText = 'SELECT merchant_id, merchant_brand_name, merchant_active_status from merchant'
+
+            const {rows} = await db.pgQuery(queryText)
+            
+            res.status(200).json ({
+                message : `All Merchants has been displayed.`,
+                allMerchantNames : rows
+            })
+
+        } catch (error) {
+            res.status(404).json({
+                message : "No merchants found using PG"
+
+            })
+        }
     }
 
 };

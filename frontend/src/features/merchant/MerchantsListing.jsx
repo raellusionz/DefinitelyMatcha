@@ -1,10 +1,10 @@
 // src/components/products/MerchantListing.jsx
 import React, { useEffect, useState } from 'react';
-import MerchantCard from './MerchantCard';  // Import MerchantCard to display each product
+import MerchantCard from './MerchantsCard';  // Import MerchantCard to display each product
 
 function MerchantListing({ merchants }) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
         {merchants.length > 0 ? (
             merchants.map((merchant) => (
             <div key={merchant.merchant_id} className="col-span-1">

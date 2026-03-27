@@ -6,5 +6,6 @@ const merchantController = require('../controllers/merchantController');  // Imp
 router.post('/createMerchant', merchantController.createMerchant);
 router.post('/loginMerchant', merchantController.loginMerchant); 
 router.post('/logoutMerchant', merchantController.logoutMerchant);
+router.get('/getAllMerchantNames',merchantController.getAllMerchantNamesPg)
 
 module.exports = router;  // Export the router

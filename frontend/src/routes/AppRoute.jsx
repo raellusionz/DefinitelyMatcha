@@ -3,6 +3,10 @@ import { Routes, Route } from 'react-router-dom';
 import ProductsPage from '../features/product/ProductsPage'
 import MerchantsPage from '../features/merchant/MerchantsPage'
 import Navbar from '../components/layout/NavBar'
+import CartCheckoutPage from "../features/cart/CartsPage";
+import BottomNavBar from '../components/layout/BottomBar'
+import ProfilePage from "../features/profile/ProfilePage";
+import ProfileCardPage from "../features/card/ProfileCardPage";
 
 function AppRoutes() {
   return (
@@ -11,8 +15,12 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<ProductsPage />} />
         <Route path="/merchants" element={<MerchantsPage />} />
-        
+        <Route path="/products/:merchantId" element={<ProductsPage />} />
+        <Route path="/cart" element={<CartCheckoutPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/add-card" element={<ProfileCardPage />} />
       </Routes>
+      <BottomNavBar/>
     </div>
   );
 }

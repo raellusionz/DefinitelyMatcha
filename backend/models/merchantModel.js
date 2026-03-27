@@ -14,7 +14,17 @@ const MerchantModel = sequelize.define('MerchantModel',{
     merchant_pass : {
         type : DataTypes.STRING(255),
         allowNull : false
+    },
+    merchant_brand_name : {
+        type : DataTypes.STRING(255),
+        allowNull : false
+    },
+    active_status : {
+        type : DataTypes.BOOLEAN,
+        allowNull : false,
+        defaultValue: false
     }
+
 }, {
     tableName : 'merchant',
     timestamps : false
@@ -26,4 +36,4 @@ sequelize.sync()
   .then(() => console.log('Merchant model has been synced'))
   .catch((err) => console.error('Error syncing the Merchant model:', err));
 
-module.exports = TransactionModel;
+module.exports = MerchantModel;

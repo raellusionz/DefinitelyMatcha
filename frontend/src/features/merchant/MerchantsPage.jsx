@@ -1,24 +1,29 @@
 import React, { useEffect, useState } from 'react';
-//import merchantService from './merchantService'
-import MerchantListing from './MerchantListing'
+import merchantsService from './merchantsService'
+import MerchantListing from './MerchantsListing'
 
 const MerchantsPage = () => {
     const fetchedMerchantsData = [
-        {merchant_id : 1, merchant_name : "Rowayne's Matcha"},
-        {merchant_id : 2, merchant_name : "Alyssa's Matcha"},
-        {merchant_id : 3, merchant_name : "Shyan's Matcha"},
-        {merchant_id : 4, merchant_name : "Delearns's Matcha"},
+        {merchant_id : 1, merchant_brand_name : "Rowayne's Matcha", merchant_active_status: true},
+        {merchant_id : 2, merchant_brand_name : "Alyssa's Matcha", merchant_active_status: false},
+        {merchant_id : 3, merchant_brand_name : "Shyan's Matcha", merchant_active_status: true}
     ]
     const [merchants, setMerchants] = useState([])
     const [loading, setLoading] = useState(true);  // Loading state for handling fetch delays
     const [error, setError] = useState(null); 
+    const [searchQuery, setSearchQuery] = useState(''); // To store the search input
 
     useEffect(() => {
         const fetchMerchants = async() => {
             try {
-                //const fetchedMerchants = await merchantService.getAllMerchants
-                //const fetchedMerchantsData = fetchedMerchants.data.singleMerchantProducts
-                setMerchants(fetchedMerchantsData)
+                //const fetchedMerchants = await merchantsService.getAllMerchantNames();
+                //const fetchedMerchantsData = fetchedMerchants.data.allMerchantNames
+                //console.log(fetchedMerchantsData)
+                const sortedMerchants = [...fetchedMerchantsData].sort(
+                (a, b) => b.merchant_active_status - a.merchant_active_status
+                );
+
+                setMerchants(sortedMerchants)
             }catch(err) {
                 setError('Failed to fetch products')
                 console.error('Error fetching products:', err);
@@ -29,15 +34,37 @@ const MerchantsPage = () => {
 
         fetchMerchants();
     }, []);
+
+    // Filter merchants based on search query
+    const filteredMerchants = merchants.filter(merchant =>
+        merchant.merchant_brand_name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    
     if(loading) return <div>Loading....</div>
     if(error) return <div>(error)</div>
 
     return (
-     <div className="bg-gradient-to-r from-green-300 via-teal-400 to-lime-300 ">
-      <div className="container mx-auto p-4 bg-purple">
-        <h1 className="text-3xl text-black text-decoration-line: underline font-bold text-center mb-5">Merchants</h1>
-        <MerchantListing merchants={merchants} />  {/* Pass mock products to ProductListing */}
-      </div>
+      <div className="container mx-auto p-2 bg-purple">
+        <form className="max-w-md mx-auto p-3 m-3">   
+          <div className="relative flex items-center">
+            {/* Search Icon */}
+            <div className="absolute left-3 text-gray-500">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 21l-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"></path>
+              </svg>
+            </div>
+            {/* Search Input */}
+            <input
+              type="text"
+              id="search"
+              className="w-full pl-10 pr-16 py-2 border rounded-md text-sm"
+              placeholder="Search for Merchants"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)} // Update state when user types
+            />
+          </div>
+        </form>
+        <MerchantListing merchants={filteredMerchants} />  {/* Pass mock products to ProductListing */}
       </div>
   );
 

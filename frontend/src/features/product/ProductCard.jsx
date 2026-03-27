@@ -3,10 +3,18 @@ import React from 'react';
 
 function ProductCard({ product }) {
   return (
-    <div className="bg-teal-400 border-2 border-shadow-lg rounded-lg p-4 text-center ">
-      <h2 className="text-l font-semibold">{product.pdt_name}</h2>
-      <p className="text-gray-900 mt-2">${product.pdt_price}</p>
-      <button className="bg-pink-200  text-gray-800 text-lg py-3 px-4 rounded mt-4 hover:bg-blue-700 transition duration-300">
+    <div className="bg-white border-2 border-shadow-lg rounded-lg p-4 text-center ">
+      {/* Product Image */}
+      <img 
+        src={product.image} // Fallback if no image is provided
+        // alt={product.pdt_name}
+        className="w-32 h-32 object-cover rounded-lg mb-4 mx-auto"  // Image size and styling
+      />
+      <h2 className="text-sm sm:text-base md:text-lg font-semibold text-center text-gray-800 mb-2 truncate">
+        {product.pdt_name}
+      </h2>
+      <p className="text-sm sm:text-base md:text-lg text-gray-900 mt-2">${product.pdt_price}</p>
+      <button className="bg-pink-200 text-gray-800 text-sm sm:text-base py-2 sm:py-3 px-4 sm:px-6 rounded mt-4 hover:bg-blue-700 transition duration-300">
         Add to Cart
       </button>
     </div>
