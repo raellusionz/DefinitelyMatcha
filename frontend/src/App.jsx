@@ -6,11 +6,12 @@ import AppRoutes from '../src/routes/AppRoute' // Import AppRoutes to manage rou
 function App() {
   
   return (
-    <div className="min-h-screen w-full bg-[#f3f7f3]">
-      <AppRoutes />  {/* Render routes that include the Navbar and Products page */}
-      
-    </div>
-    
+    <UserProvider>
+      <div className="min-h-screen w-full bg-[#f3f7f3]">
+        <AppRoutes />  {/* Render routes that include the Navbar and Products page */}
+        
+      </div>
+    </UserProvider>
   );
 }
 

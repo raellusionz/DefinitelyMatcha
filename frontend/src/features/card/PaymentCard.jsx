@@ -2,9 +2,14 @@ import React, { useState, useRef, useEffect } from "react";
 import CardTypeIcon from "./CardTypeIcon";
 import { TrashIcon } from '@heroicons/react/24/outline'; // Correct import for Heroicons v2
 
-const maskNumber = (number) => {
-  const parts = number.split(" ");
-  return parts.map((p, i) => (i < parts.length - 1 ? "••••" : p)).join("  ");
+const maskNumber = (cardNumber) => {
+  // Remove any non-digit characters
+  const cleanedNumber = cardNumber.replace(/\D/g, "");
+  // Mask all digits except the last 4
+  const masked = cleanedNumber.slice(0, -4).replace(/\d/g, "•") + cleanedNumber.slice(-4);
+
+  // Format the masked number with spaces every 4 digits
+  return masked.replace(/(.{4})(?=.)/g, "$1 ").trim();
 };
 
 const PaymentCard = ({ card, index, onRemove }) => {
@@ -65,13 +70,13 @@ const PaymentCard = ({ card, index, onRemove }) => {
         </div>
 
         <div className="font-mono tracking-wide text-lg opacity-90 mb-4">
-          {maskNumber(card.number)}
+          {maskNumber(card.cardNumber)}
         </div>
 
         <div className="flex justify-between items-end mt-auto">
           <div>
             <p className="text-xs uppercase tracking-wide opacity-55 mb-1">Card Holder</p>
-            <p className="text-sm font-medium">{card.name}</p>
+            <p className="text-sm font-medium">{card.cardName}</p>
           </div>
           <div className="text-right">
             <p className="text-xs uppercase tracking-wide opacity-55 mb-1">Expires</p>
@@ -84,7 +89,7 @@ const PaymentCard = ({ card, index, onRemove }) => {
           <button
             onClick={(e) => {
               e.stopPropagation();  // Prevent the click event from propagating to parent div
-              onRemove(card.id);    // Trigger the onRemove function passed from the parent component
+              onRemove(card.cardId);    // Trigger the onRemove function passed from the parent component
             }}
             className="absolute inset-0 flex justify-center items-center text-white hover:text-red-500 z-50"  // High z-index for trash button
           >

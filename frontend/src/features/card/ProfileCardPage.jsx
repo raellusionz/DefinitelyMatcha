@@ -1,30 +1,23 @@
 import React, { useState } from "react";
 import PaymentCard from "./PaymentCard";
-//import AddAnotherCard from "./AddAnotherCard";
+import AddAnotherCard from "./AddAnotherCard";
 
 // Sample cards data
 const SAMPLE_CARDS = [
-  { id: 1, name: "Matcha Lover", number: "4242 4242 4242 4242", expiry: "08/27", type: "visa" },
-  { id: 2, name: "Matcha Lover", number: "5555 5555 5555 4444", expiry: "12/26", type: "mastercard" },
+  { cardId: 1, cardName: "Matcha Lover", cardNumber: "4242 4242 4242 4242", expiry: "08/27", type: "visa" },
+  { cardId: 2, cardName: "Matcha Lover", cardNumber: "5555 5555 5555 4444", expiry: "12/26", type: "mastercard" },
 ];
 
 const CardPage = () => {
   const [cards, setCards] = useState(SAMPLE_CARDS);
 
-  const handleAddCard = () => {
-    const newCard = {
-      id: cards.length + 1,
-      name: "Matcha Lover",
-      number: "3782 8224 6310 005",
-      expiry: "03/28",
-      type: "visa",
-    };
+  const handleAddCard = (newCard) => {
     setCards([...cards, newCard]);
   };
 
-  const handleRemoveCard = (id) => {
+  const handleRemoveCard = (cardId) => {
     // Filter out the card with the matching ID
-    setCards(cards.filter((card) => card.id !== id));
+    setCards(cards.filter((card) => card.cardId !== cardId));
   };
 
   return (
@@ -39,10 +32,10 @@ const CardPage = () => {
 
         <div className="flex flex-col items-center gap-3">
           {cards.map((card, i) => (
-            <PaymentCard key={card.id} card={card} index={i} onRemove={handleRemoveCard} />
+            <PaymentCard key={card.cardId} card={card} index={i} onRemove={handleRemoveCard} />
           ))}
-{/* 
-          <AddAnotherCard onClick={handleAddCard} /> */}
+
+          <AddAnotherCard onCardAdded={handleAddCard} />
         </div>
 
         {/* Footer */}

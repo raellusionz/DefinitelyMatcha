@@ -7,6 +7,7 @@ import CartCheckoutPage from "../features/cart/CartsPage";
 import BottomNavBar from '../components/layout/BottomBar'
 import ProfilePage from "../features/profile/ProfilePage";
 import ProfileCardPage from "../features/card/ProfileCardPage";
+import TransactionHistPage from "../features/transaction/TransactionHistPage";
 
 function AppRoutes() {
   return (
@@ -19,6 +20,7 @@ function AppRoutes() {
         <Route path="/cart" element={<CartCheckoutPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/add-card" element={<ProfileCardPage />} />
+        <Route path="/transactions" element={<TransactionHistPage />} />
       </Routes>
       <BottomNavBar/>
     </div>

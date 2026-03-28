@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ProfileHeader from './ProfileHeader';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import { FaCreditCard, FaHistory, FaSignOutAlt } from 'react-icons/fa'; // Icons for cards
+import { useUser } from '../context/UserContext'; // Import the hook
 // import ProfileEditor from './ProfileEditor';
 // import Transactions from './Transactions';
 // import AddCard from './AddCard';
