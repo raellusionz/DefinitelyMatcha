@@ -9,6 +9,7 @@ import { useUser } from '../context/UserContext'; // Import the hook
 // import Logout from './Logout';
 
 const ProfilePage = () => {
+    const { userId } = useUser();
     const fetchedUserData = {
         cust_id  : 1, 
         cust_name : "Rowayne Siah", 
