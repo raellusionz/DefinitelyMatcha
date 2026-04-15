@@ -14,13 +14,13 @@ function AppRoutes() {
     <div className="w-full">
       <Navbar />
       <Routes>
-        <Route path="/" element={<ProductsPage />} />
+        <Route path="/" element={<MerchantsPage />} />
         <Route path="/merchants" element={<MerchantsPage />} />
-        <Route path="/products/:merchantId" element={<ProductsPage />} />
+        <Route path="/products/:merchant_id" element={<ProductsPage />} />
         <Route path="/cart" element={<CartCheckoutPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/add-card" element={<ProfileCardPage />} />
-        <Route path="/transactions" element={<TransactionHistPage />} />
+        <Route path="/transactions/:cust_id" element={<TransactionHistPage />} />
       </Routes>
       <BottomNavBar/>
     </div>

@@ -8,7 +8,7 @@ const productService = {
         return response
     },
     getSingleMerchantProductsORM : async (merchant_id) => {
-        const response = await axiosClient.post('/singleMerchantProductsORM', {
+        const response = await axiosClient.post('/products/singleMerchantProductsORM', {
             merchant_id: merchant_id
         })
         return response

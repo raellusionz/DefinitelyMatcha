@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import merchantsService from './merchantsService'
 import MerchantListing from './MerchantsListing'
+import GeolocationComponent from './GeolocationComponent'  // Import the Geolocation Component
+
 
 const MerchantsPage = () => {
-    const fetchedMerchantsData = [
-        {merchant_id : 1, merchant_brand_name : "Rowayne's Matcha", merchant_active_status: true},
-        {merchant_id : 2, merchant_brand_name : "Alyssa's Matcha", merchant_active_status: false},
-        {merchant_id : 3, merchant_brand_name : "Shyan's Matcha", merchant_active_status: true}
-    ]
+    // const fetchedMerchantsData = [
+    //     {merchant_id : 1, merchant_brand_name : "Rowayne's Matcha", merchant_active_status: true},
+    //     {merchant_id : 2, merchant_brand_name : "Alyssa's Matcha", merchant_active_status: false},
+    //     {merchant_id : 3, merchant_brand_name : "Shyan's Matcha", merchant_active_status: true}
+    // ]
     const [merchants, setMerchants] = useState([])
     const [loading, setLoading] = useState(true);  // Loading state for handling fetch delays
     const [error, setError] = useState(null); 
@@ -16,8 +18,8 @@ const MerchantsPage = () => {
     useEffect(() => {
         const fetchMerchants = async() => {
             try {
-                //const fetchedMerchants = await merchantsService.getAllMerchantNames();
-                //const fetchedMerchantsData = fetchedMerchants.data.allMerchantNames
+                const fetchedMerchants = await merchantsService.getAllMerchantNames();
+                const fetchedMerchantsData = fetchedMerchants.data.allMerchantNames
                 //console.log(fetchedMerchantsData)
                 const sortedMerchants = [...fetchedMerchantsData].sort(
                 (a, b) => b.merchant_active_status - a.merchant_active_status
@@ -44,8 +46,9 @@ const MerchantsPage = () => {
     if(error) return <div>(error)</div>
 
     return (
-      <div className="container mx-auto p-2 bg-purple">
-        <form className="max-w-md mx-auto p-3 m-3">   
+      <div className="container item-center mx-auto mt-2 p-2 pb-20">
+        <GeolocationComponent onLocationFetched={(loc) => console.log(loc)} />
+        <form className="max-w-s mx-auto p-3 m-2">   
           <div className="relative flex items-center">
             {/* Search Icon */}
             <div className="absolute left-3 text-gray-500">
@@ -57,7 +60,7 @@ const MerchantsPage = () => {
             <input
               type="text"
               id="search"
-              className="w-full pl-10 pr-16 py-2 border rounded-md text-sm"
+              className="w-full pl-10 pr-16 py-2 border rounded-2xl text-sm"
               placeholder="Search for Merchants"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)} // Update state when user types

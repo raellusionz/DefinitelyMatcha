@@ -109,6 +109,26 @@ const MerchantController = {
 
             })
         }
+    },
+
+    getOneMerchantPg : async (req,res) => {
+        try{
+            const {merchant_id} = req.body
+
+            const queryText = `SELECT merchant_id, merchant_brand_name from merchant where merchant_id = $1`
+
+            const {rows} = await db.pgQuery(queryText, [merchant_id])
+            
+            res.status(200).json ({
+                message : `Merchant ${merchant_id} Store Name has been displayed.`,
+                singleMerchantInfo : rows[0]
+            })
+
+        } catch (error) {
+            res.status(404).json({
+                message : "No merchants found using PG"
+            })
+        }
     }
 
 };

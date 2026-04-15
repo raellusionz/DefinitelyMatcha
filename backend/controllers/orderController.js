@@ -39,7 +39,26 @@ const OrderController = {
         try {
             const {merchant_id, merchant_txn_id } = req.body 
 
-            const queryText = 'SELECT * FROM orders where merchant_id = $1 AND merchant_txn_id = $2'
+            //const queryText = 'SELECT * FROM orders where merchant_id = $1 AND merchant_txn_id = $2'
+            const queryText = `
+                SELECT
+                    merchant_id,
+                    merchant_txn_id,
+                    merchant_pdt_id,
+                    pdt_name,
+                    pdt_price,
+                    COUNT(*) AS pdt_qty,
+                    (COUNT(*) * pdt_price::numeric) AS subtotal
+                FROM orders
+                WHERE merchant_id = $1 AND merchant_txn_id = $2
+                GROUP BY
+                    merchant_id,
+                    merchant_txn_id,
+                    merchant_pdt_id,
+                    pdt_name,
+                    pdt_price
+                ORDER BY merchant_pdt_id;
+            `;
 
             const values = [merchant_id, merchant_txn_id]
 

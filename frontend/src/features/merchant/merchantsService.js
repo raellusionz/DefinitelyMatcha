@@ -6,5 +6,12 @@ const merchantService = {
         })
         return response
     },
+
+    getOneMerchantPg : async(merchant_id) => {
+        const response = await axiosClient.post('/merchants/getOneMerchantPg', {
+            merchant_id: merchant_id
+        })
+        return response
+    }
 }
 export default merchantService

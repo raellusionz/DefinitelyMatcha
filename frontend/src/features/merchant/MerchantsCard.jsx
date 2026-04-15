@@ -10,22 +10,34 @@ function MerchantCard({ merchant }) {
         `${
           isActive ? 'bg-white': 'bg-gray-200 opacity-60'
         } 
-        border-2 border-shadow-lg rounded-lg p-4 text-center`
+        border-2 border-shadow-lg rounded-lg p-3 text-center`
       }
     >
       <Link to={`/products/${merchant.merchant_id}`}>
-       <div className="flex items-center gap-4">
+       {/* Image */}
         <img
-            src={merchant.image}
-            alt={merchant.name}
-            className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-full"
-          />
-          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-center text-gray-900">
+          src={merchant.image}
+          alt={merchant.name}
+          className="w-full h-32 sm:h-40 object-cover rounded-2xl mb-3"
+        />
+
+        {/* Text section */}
+        <div className="flex flex-col items-start text-left">
+          
+          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900">
             {merchant.merchant_brand_name}
           </h2>
+
+          <p className="text-xs text-gray-700 mb-1">
+            ⭐ 4.5 Star (120)
+          </p>
+
+          <p className="text-xs text-gray-600">
+            Distance to You : 16 KM
+          </p>
+
         </div>
       </Link>
-      
     </div>
   );
 }

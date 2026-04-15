@@ -4,11 +4,11 @@ const TransactionModel = require('../models/transactionModel')
 
 const CustTransactionController = {
 
-    getAllCustTransactionsPg : async(req, res) => {
+    getAllSingleCustTransactionsPg : async(req, res) => {
         try {
             const {cust_id} = req.body
             
-            const queryText = 'SELECT * from transactions WHERE cust_id = $1'
+            const queryText = 'SELECT t.*, m.merchant_brand_name FROM transactions t JOIN merchant m ON t.merchant_id = m.merchant_id WHERE t.cust_id = $1;'
          
             const {rows} = await db.pgQuery(queryText, [cust_id])
 
@@ -26,7 +26,7 @@ const CustTransactionController = {
         }
     },
 
-    getAllCustTransactionsORM : async(req, res) => {
+    getAllSingleCustTransactionsORM : async(req, res) => {
         try{
             const {cust_id} = req.body
             const allTransactions = await TransactionModel.findAll({
@@ -45,52 +45,55 @@ const CustTransactionController = {
             })
         }
     },
-    getSingleCustTransactionsPg : async(req, res) => {
-        try {
-            const {merchant_id, merchant_txn_id } = req.body
-
-            const queryText = 'SELECT * from transactions WHERE merchant_id = $1 AND merchant_txn_id = $2'
-            
-            const values = [merchant_id, merchant_txn_id]
-
-            const {rows} = await db.pgQuery(queryText, values)
-
-            res.status(200).json({
-                message : `Transaction Number ${merchant_txn_id} of Merchant ${merchant_id} Shown Using PG`,
-                singleMerchTransactions : rows[0]
-            })
-        } catch (error) {
-            console.log("fail to get data")
-            res.status(404).json ({
-                message : "No Transactions Found using PG",
-                error: error.message
-            })
-        }
-    },
-
-    getSingleCustTransactionsORM : async(req, res) => {
-        try{
-            const {merchant_id, merchant_txn_id } = req.body
-
-            const allTransactions = await TransactionModel.findOne({
-                where : {
-                    merchant_id : merchant_id,
-                    merchant_txn_id : merchant_txn_id
-                }
-            }
-            );
-            res.status(200).json({
-                message : `Transaction Number ${merchant_txn_id} of Merchant ${merchant_id} Shown Using ORM`,
-                singleMerchTransactions : allTransactions
-            })
-        } catch(error) {
-            console.log("Fall into here")
-            res.status(404).json ({
-                message : "No Transactions Found using ORM",
-                error: error.message
-            })
-        }
-    },
+    
 }
 
 module.exports = CustTransactionController
+
+
+// getSingleCustTransactionsPg : async(req, res) => {
+    //     try {
+    //         const {merchant_id, merchant_txn_id } = req.body
+
+    //         const queryText = 'SELECT * from transactions WHERE merchant_id = $1 AND merchant_txn_id = $2'
+            
+    //         const values = [merchant_id, merchant_txn_id]
+
+    //         const {rows} = await db.pgQuery(queryText, values)
+
+    //         res.status(200).json({
+    //             message : `Transaction Number ${merchant_txn_id} of Merchant ${merchant_id} Shown Using PG`,
+    //             singleMerchTransactions : rows[0]
+    //         })
+    //     } catch (error) {
+    //         console.log("fail to get data")
+    //         res.status(404).json ({
+    //             message : "No Transactions Found using PG",
+    //             error: error.message
+    //         })
+    //     }
+    // },
+
+    // getSingleCustTransactionsORM : async(req, res) => {
+    //     try{
+    //         const {merchant_id, merchant_txn_id } = req.body
+
+    //         const allTransactions = await TransactionModel.findOne({
+    //             where : {
+    //                 merchant_id : merchant_id,
+    //                 merchant_txn_id : merchant_txn_id
+    //             }
+    //         }
+    //         );
+    //         res.status(200).json({
+    //             message : `Transaction Number ${merchant_txn_id} of Merchant ${merchant_id} Shown Using ORM`,
+    //             singleMerchTransactions : allTransactions
+    //         })
+    //     } catch(error) {
+    //         console.log("Fall into here")
+    //         res.status(404).json ({
+    //             message : "No Transactions Found using ORM",
+    //             error: error.message
+    //         })
+    //     }
+    // },

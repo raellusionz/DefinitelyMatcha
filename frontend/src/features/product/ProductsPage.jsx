@@ -1,34 +1,45 @@
 // src/features/products/ProductsPage.jsx
 import React, { useEffect, useState } from 'react';
-//import productService from './ProductService';
+import { useParams } from 'react-router-dom'; // Import useParams to get merchant_id from the URL
+import productService from './productService';
+import merchantsService from '../merchant/merchantsService'
 import ProductListing from './ProductListing';  // Import the ProductListing component
+import cartService from '../cart/cartService';
+// Dummy product data for testing purposes
+  // const fetchedProductsData = [
+  //   { merchant_pdt_id: 1, pdt_name: 'Matcha Latte', pdt_category : 'Beverages', pdt_price: 6.50 },
+  //   { merchant_pdt_id: 2, pdt_name: 'Hojicha Latte', pdt_category : 'Beverages', pdt_price: 6.00 },
+  //   { merchant_pdt_id: 3, pdt_name: 'Matcha Cheesecake', pdt_category : 'Desserts', pdt_price: 8.90 },
+  // ];  
 
+  
 const ProductsPage = () => {
-  // Dummy product data for testing purposes
-  const fetchedProductsData = [
-    { merchant_pdt_id: 1, pdt_name: 'Matcha Latte', pdt_category : 'Beverages', pdt_price: 6.50 },
-    { merchant_pdt_id: 2, pdt_name: 'Hojicha Latte', pdt_category : 'Beverages', pdt_price: 6.00 },
-    { merchant_pdt_id: 3, pdt_name: 'Matcha Cheesecake', pdt_category : 'Desserts', pdt_price: 8.90 },
-  ];  
+  //const merchant_id = 1
+  const cust_id = 1
+  const {merchant_id} = useParams()
   const [products, setProducts] = useState([])
   const [merchant, setMerchant] = useState({ 
-    name: "Rowayne's Matcha",
-    reviews: 120,  // Number of reviews
-    rating: 4.5  // Star rating
+    name: "",
+    reviews: 4.5,  // Number of reviews
+    rating: 120  // Star rating
 
   });
   const [searchQuery, setSearchQuery] = useState(''); // State to store search input
   const [loading, setLoading] = useState(true);  // Loading state for handling fetch delays
   const [error, setError] = useState(null); 
-  const merchant_id = 1
+
   useEffect(() => {
+    //console.log(merchant_id)
     const fetchProducts = async() => {
       if (!merchant_id) return; 
+      setLoading(true)
       try {
-        // const fetchedProducts = await productService.getSingleMerchantProductsPg(merchant_id);
-        // const fetchedProductsData = fetchedProducts.data.singleMerchantProducts
+        const fetchedProducts = await productService.getSingleMerchantProductsPg(merchant_id);
+        //console.log(fetchedProducts)
+        const fetchedProductsData = fetchedProducts.data.singleMerchantProducts
+        // console.log(fetchedProductsData)
         setProducts(fetchedProductsData)
-        console.log(fetchedProductsData)
+        // console.log(fetchedProductsData)
       } catch(err) {
         setError('Failed to fetch products')
         console.error('Error fetching products:', err);
@@ -36,9 +47,35 @@ const ProductsPage = () => {
         setLoading(false);
       }
     }; 
-    
+
+    const fetchMerchantName = async() => {
+      if (!merchant_id) return; 
+      setLoading(true)
+      try {
+        const fetchedMerchant = await merchantsService.getOneMerchantPg(merchant_id);
+        //console.log(fetchedMerchant)
+        const fetchedMerchantData = fetchedMerchant.data.singleMerchantInfo
+        // console.log(fetchedMerchantData.merchant_brand_name)
+        setMerchant({
+            name: fetchedMerchantData.merchant_brand_name,
+            reviews: 4.5,  // Number of reviews
+            rating: 120  // Star rating
+        });
+        // console.log(fetchedProductsData)
+      } catch(err) {
+        setError('Failed to fetch products')
+        console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
+      }
+    }; 
+    fetchMerchantName()
     fetchProducts(); 
   }, []);
+
+
+  
+  
 
   if(loading) return <div>Loading....</div>
   if(error) return <div>(error)</div>
@@ -48,8 +85,27 @@ const ProductsPage = () => {
     product.pdt_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const addItemToCart = async (merchant_pdt_id, action) => {
+
+    const itemToAdd = products.find(item => item.merchant_pdt_id === merchant_pdt_id)
+
+    if(itemToAdd) {
+      await cartService.addItemToCartPg(
+        cust_id,
+        merchant_id, 
+        itemToAdd.merchant_pdt_id, 
+        itemToAdd.pdt_name, 
+        itemToAdd.pdt_price
+
+      )
+    }
+    
+  }
+
+
+
   return (
-     <div className="bg-[#f3f7f3]">
+     <div className="bg-white">
       <div className="container mx-auto p-4 bg-purple pb-20" >
 
         {/* Merchant section with padding and margin */}
@@ -93,7 +149,11 @@ const ProductsPage = () => {
           />
         </div>
 
-        <ProductListing products={filteredProducts} />  {/* Pass mock products to ProductListing */}
+        <ProductListing 
+        products={filteredProducts}
+        addItemToCart = {addItemToCart}
+        
+        />  {/* Pass mock products to ProductListing */}
       </div>
     </div>
   );
@@ -103,3 +163,4 @@ export default ProductsPage;
 
 //<div className="bg-gradient-to-r from-yellow-100 via-pink-200 to-purple-300">
 //bg-gradient-to-r from-green-300 via-teal-400 to-lime-300
+

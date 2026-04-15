@@ -1,6 +1,9 @@
 import React from "react";
 
 function CartsItem ({item, updateQuantity, removeItem}) {
+    // Log the qty value and type to check what it is
+    //console.log('Item:', item);
+    //console.log('Type of item.qty:', typeof item.qty);
     return (
         /* LEFT */ 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border-b bg-white rounded-lg shadow-sm">

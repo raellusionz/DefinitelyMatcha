@@ -8,11 +8,13 @@ export const UserProvider = ({children}) => {
     const [userId, setUserId] = useState(null)
 
     useEffect(() => {
-        setUserId(getUserId())
+        const fetchedUserId = getUserId(); // Get user ID from storage
+        setUserId(fetchedUserId);
+
     }, []);
 
     return (
-        <UserContext.Provider value = {{userId,setUserId}}>
+        <UserContext.Provider value = {{userId, setUserId}}>
             {children}
         </UserContext.Provider>
     )
