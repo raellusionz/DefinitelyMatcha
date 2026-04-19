@@ -4,12 +4,13 @@ const merchTransactionController = require('../controllers/merchTransactionContr
 
 // Define your routes
 //router.post('/transactions', transactionController.createTransaction);
-router.post('/allMerchTransactionsPg', merchTransactionController.getAllMerchTransactionsPg); 
+router.post('/getAllMerchTransactionsPg', merchTransactionController.getAllMerchTransactionsPg); 
 router.post('/allMerchTransactionsORM', merchTransactionController.getAllMerchTransactionsORM); 
 router.post('/getSingleMerchTransactionsPg', merchTransactionController.getSingleMerchTransactionsPg); 
 router.post('/getSingleMerchTransactionsORM', merchTransactionController.getSingleMerchTransactionsORM); 
-router.post('/newMerchTransactionsPg', merchTransactionController.createNewMerchTransactionsPg); 
+router.post('/createNewMerchTransactionsPg', merchTransactionController.createNewMerchTransactionsPg); 
 router.post('/newMerchTransactionsORM', merchTransactionController.createNewMerchTransactionsORM); 
+
 
 
 module.exports = router;  // Export the router

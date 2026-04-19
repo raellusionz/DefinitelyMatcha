@@ -94,7 +94,7 @@ const MerchantController = {
 
     getAllMerchantNamesPg : async (req, res) => {
         try {
-            const queryText = 'SELECT merchant_id, merchant_brand_name, merchant_active_status from merchant'
+            const queryText = 'SELECT merchant_id, merchant_brand_name, merchant_active_status, merchant_lat, merchant_lng from merchant'
 
             const {rows} = await db.pgQuery(queryText)
             

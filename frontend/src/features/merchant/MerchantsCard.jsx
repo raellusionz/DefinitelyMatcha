@@ -1,9 +1,21 @@
 // src/components/products/ProductCard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { haversineDistance } from '../../utils/distance';
 
-function MerchantCard({ merchant }) {
+function MerchantCard({ merchant ,userLocation }) {
   const isActive = merchant.merchant_active_status
+
+  const distance =
+    userLocation && merchant.merchant_lat && merchant.merchant_lng
+      ? haversineDistance(
+          userLocation.lat,        // from GeolocationComponent
+          userLocation.lng,        // from GeolocationComponent
+          merchant.merchant_lat,   // needs to exist in your DB
+          merchant.merchant_lng
+        ).toFixed(1)
+      : null;
+
   return (
     <div className =
       {
@@ -33,7 +45,7 @@ function MerchantCard({ merchant }) {
           </p>
 
           <p className="text-xs text-gray-600">
-            Distance to You : 16 KM
+            {distance !== null ? `${distance} km away` : 'Enable location to see distance'}
           </p>
 
         </div>

@@ -8,9 +8,13 @@ const cartService = {
         return response
     },
 
-    resetUserCartPg: async (cust_id) => {
+    resetUserCartPg: async (cust_id, merchant_id) => {
         const response = await axiosClient.delete('/cart/resetUserCartPg', {
-            cust_id: cust_id 
+            data: {
+                cust_id: cust_id,
+                merchant_id: merchant_id
+            }
+
         })
         return response
     },
@@ -49,7 +53,14 @@ const cartService = {
     
     return response;
     
-    }
+    },
+
+    getUserCartCheckOutPg : async (cust_id) => {
+        const response = await axiosClient.post('/cart/getUserCartCheckOutPg', {
+            cust_id: cust_id 
+        })
+        return response
+    },
 
     
 }

@@ -7,8 +7,13 @@ const MerchTransactionController = {
         try {
             const {merchant_id} = req.body
             
-            const queryText = 'SELECT * from transactions WHERE merchant_id = $1'
-         
+            const queryText = `
+                SELECT t.*, c.cust_name 
+                FROM transactions t 
+                JOIN customer c ON t.cust_id = c.cust_id 
+                WHERE t.merchant_id = $1;
+            `;
+            
             const {rows} = await db.pgQuery(queryText, [merchant_id])
 
             res.status(200).json({

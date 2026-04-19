@@ -14,7 +14,11 @@ const CustomerModel = sequelize.define('CustomerModel',{
     cust_pass : {
         type : DataTypes.STRING(255),
         allowNull : false
-    }
+    },
+    cust_name : {
+        type : DataTypes.STRING(255),
+        allowNull : false
+    },
 }, {
     tableName : 'customer',
     timestamps : false

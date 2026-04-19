@@ -6,39 +6,39 @@ const cartController = {
   getUserCartPg: async (req, res) => {
     try {
 
-    const { cust_id } = req.body;
+      const { cust_id } = req.body;
 
-    // Updated query to include merchant_id
       const queryText = `
-        SELECT merchant_id, merchant_pdt_id, pdt_name, pdt_price, COUNT(*)::int as qty
-        FROM cart 
-        WHERE cust_id = $1
-        GROUP BY merchant_id, merchant_pdt_id, pdt_name, pdt_price
+          SELECT merchant_id, merchant_pdt_id, pdt_name, pdt_price, COUNT(*)::int as qty
+          FROM cart 
+          WHERE cust_id = $1
+          GROUP BY merchant_id, merchant_pdt_id, pdt_name, pdt_price
       `;
-    
-    const { rows } = await db.pgQuery(queryText, [cust_id]);
+      
+      const { rows } = await db.pgQuery(queryText, [cust_id]);
 
-    res.status(200).json({
-      message: `Cart items for customer ${cust_id}`,
-      singleUserCart: rows,
-    });
+      res.status(200).json({
+        message: `Cart items for customer ${cust_id}`,
+        singleUserCart: rows,
+      });
 
-  } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch cart data",
-      error: error.message,
-    });
-  }
+    } catch (error) {
+      res.status(500).json({
+        message: "Failed to fetch cart data",
+        error: error.message,
+      });
+    }
   },
 
   // Reset the user's cart (still needs implementation)
   resetUserCartPg: async (req, res) => {
     try {
-      const { cust_id } = req.body;
+      const { cust_id, merchant_id } = req.body;
 
       // Logic to reset the cart for the given customer ID
-      const queryText = 'DELETE FROM cart WHERE cust_id = $1';
-      const result = await db.pgQuery(queryText, [cust_id]);
+      const values = [cust_id, merchant_id]
+      const queryText = 'DELETE FROM cart WHERE cust_id = $1 AND merchant_id = $2';
+      const result = await db.pgQuery(queryText, values);
 
       // Send a success response after resetting the cart
       res.status(200).json({
@@ -137,7 +137,32 @@ const cartController = {
             });
         }
 
-    }
+    },
+
+    getUserCartCheckOutPg : async(req,res) => {
+      try {
+        const { cust_id } = req.body;
+
+        const queryText = `
+            SELECT merchant_id, merchant_pdt_id, pdt_name, pdt_price
+            FROM cart 
+            WHERE cust_id = $1
+        `;
+        
+        const {rows} = await db.pgQuery(queryText, [cust_id])
+
+        res.status(200).json({
+            message: `Cart items for customer ${cust_id}`,
+            singleUserCheckoutCart: rows,
+        });
+
+      } catch (error) {
+        res.status(404).json({
+            message: "Failed to delete the latest item from the cart.",
+                error: error.message
+        })
+      }
+    } 
 
 };
 

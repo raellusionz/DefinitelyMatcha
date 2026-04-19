@@ -5,12 +5,6 @@ import productService from './productService';
 import merchantsService from '../merchant/merchantsService'
 import ProductListing from './ProductListing';  // Import the ProductListing component
 import cartService from '../cart/cartService';
-// Dummy product data for testing purposes
-  // const fetchedProductsData = [
-  //   { merchant_pdt_id: 1, pdt_name: 'Matcha Latte', pdt_category : 'Beverages', pdt_price: 6.50 },
-  //   { merchant_pdt_id: 2, pdt_name: 'Hojicha Latte', pdt_category : 'Beverages', pdt_price: 6.00 },
-  //   { merchant_pdt_id: 3, pdt_name: 'Matcha Cheesecake', pdt_category : 'Desserts', pdt_price: 8.90 },
-  // ];  
 
   
 const ProductsPage = () => {
@@ -74,10 +68,18 @@ const ProductsPage = () => {
   }, []);
 
 
-  
-  
-
-  if(loading) return <div>Loading....</div>
+  if(loading) return (
+    <div className="flex flex-col items-center
+        justify-center h-48 gap-3">
+      <div className="w-9 h-9 rounded-full
+        border-[2.5px] border-transparent
+        border-t-gray-900 border-b-gray-200
+        animate-spin" />
+      <p className="text-sm text-gray-400">
+        Loading Products...
+      </p>
+    </div>
+  )
   if(error) return <div>(error)</div>
 
   // Filter products based on search query

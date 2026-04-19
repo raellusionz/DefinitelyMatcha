@@ -23,6 +23,17 @@ const transactionService = {
         })
         return response
     
+    },
+
+    createNewMerchTransactionsPg : async(cust_id, merchant_id, pdt_qty, amt, pay_method) => {
+        const response = await axiosClient.post('/merchTransactions/createNewMerchTransactionsPg', {
+            cust_id : cust_id,
+            merchant_id : merchant_id,
+            pdt_qty : pdt_qty,
+            amt : amt,
+            pay_method : pay_method
+        })
+        return response
     }
 }
 

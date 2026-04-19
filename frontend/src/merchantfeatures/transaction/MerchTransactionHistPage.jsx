@@ -1,18 +1,19 @@
 //L1
 
 import React, { useState, useEffect, use } from "react";
-import transactionService from "./transactionService";
-import TransactionFilter from "../transaction/TransactionFilter";
-import transactionSupportLogos from "../transaction/TransactionIcons";
-import TransactionList from "./TransactionList";
-import TransactionDetailModal from "./TransactionDetailModal";
-//import fetchSingleCustomerTransactionsData from "./TransactionData";
-import { groupByDate, formatTime } from "./TransactionUtils";
+import merchTransactionService from "./MerchTransactionService";
+import TransactionFilter from "../transaction/MerchTransactionFilter";
+import transactionSupportLogos from "../transaction/MerchTransactionIcons";
+import TransactionList from "./MerchTransactionList";
+import TransactionDetailModal from "./MerchTransactionDetailModal";
+import { groupByDate, formatTime } from "./MerchTransactionUtils";
 import { useUser } from "../../context/userContext";
 const { MastercardIcon, PaynowLogo, MatchaIcon } = transactionSupportLogos;
 
 const TransactionHistory = () => {
-  const { userId: cust_id, userLoading} = useUser();
+  // const { userId: cust_id, userLoading} = useUser();
+  //const { userId: cust_id, userLoading} = useUser();
+  const merchant_id = 1
   const [transactions, setTransactions] = useState([]);
   const [filterMethod, setFilterMethod] = useState("All")
   const [loading, setLoading] = useState(true);  // Loading state for handling fetch delays
@@ -21,26 +22,27 @@ const TransactionHistory = () => {
   const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
-    console.log("userLoading:", userLoading, "cust_id:", cust_id); // add this
-    if (userLoading) return;
-    if (!cust_id) return;
+    // console.log("userLoading:", userLoading, "cust_id:", cust_id); // add this
+    // if (userLoading) return;
+    if (!merchant_id) return;
 
 
-    const fetchSingleCustomerTransactions = async() => {
+    const fetchSingleMerchantTransactions = async() => {
       try {
-        console.log("Customer ID : ",cust_id)
-        const fetchSingleCustomerTransactions = await transactionService.getAllSingleCustTransactionsPg(cust_id)
-        const fetchSingleCustomerTransactionsData = fetchSingleCustomerTransactions.data.allCustTransactions
-        setTransactions(fetchSingleCustomerTransactionsData)
+        console.log("Merchant ID : ",merchant_id)
+        const fetchSingleMerchantTransactions = await merchTransactionService.getAllMerchTransactionsPg(merchant_id)
+        const fetchSingleMerchantTransactionsData = fetchSingleMerchantTransactions.data.allMerchTransactions
+        console.log (fetchSingleMerchantTransactionsData)
+        setTransactions(fetchSingleMerchantTransactionsData)
       } catch(err) {
-        setError(`Failed to fetch customer ${cust_id} transactions`)
+        setError(`Failed to fetch customer ${merchant_id} transactions`)
         console.error('Error fetching transactions:', err);
       } finally {
         setLoading(false);
       }
     }
-    fetchSingleCustomerTransactions()
-  }, [cust_id, userLoading]);
+    fetchSingleMerchantTransactions()
+  }, [merchant_id]);
 
   const handleTransactionClick = (txn) => {
     setSelectedTransaction(txn)

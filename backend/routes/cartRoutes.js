@@ -8,6 +8,7 @@ router.delete('/resetUserCartPg', cartController.resetUserCartPg);
 router.post('/addItemToCartPg', cartController.addItemToCartPg);
 router.delete('/reduceQuantityCartPg', cartController.reduceQuantityCartPg)
 router.delete('/removeCartItemPg', cartController.removeCartItemPg)
+router.post('/getUserCartCheckOutPg', cartController.getUserCartCheckOutPg)
 
 
 module.exports = router;  // Export the router

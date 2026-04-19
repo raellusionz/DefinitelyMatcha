@@ -21,7 +21,7 @@ const CardPage = () => {
   };
 
   return (
-    <div className="bg-[#faf8f3] font-sans">
+    <div className="bg-white font-sans">
 
       {/* Main Content */}
       <main className="flex flex-col items-center p-2">

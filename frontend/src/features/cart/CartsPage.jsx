@@ -3,7 +3,7 @@ import CartsList from './CartsList'
 import CartsActions from './CartsActions'
 import CartsSummary from './CartsSummary'
 import CartsNote from './CartsNote'
-//import { useUser } from '../../context/userContext';  // Adjust according to folder structure
+import { useUser } from '../../context/userContext';  // Adjust according to folder structure
 import cartService from './cartService'
 
 
@@ -13,31 +13,31 @@ const CartCheckOutPage = () => {
   const [cartItems, setCartItems] = useState([])
   const [loading, setLoading] = useState(true);  // Loading state for handling fetch delays
   const [error, setError] = useState(null); 
-  // const { userId } = useUser();
-  const cust_id = 1
-  
+  const { userId: cust_id } = useUser();
+  // const cust_id = 1
 
-  useEffect(()  => {
-    const fetchCartItems = async() => {
-      try {
-        console.log(cust_id)
-        const fetchedCart = await cartService.getUserCartPg(cust_id);
-        //console.log(fetchedCart)
-        const fetchedCartData = fetchedCart.data.singleUserCart
-        console.log("Fetched Cart Data:", fetchedCartData); 
-      
-        // Set the merged cart items
-        setCartItems(fetchedCartData);
+ 
+  const fetchCartItems = async() => {
+    try {
+      console.log(cust_id)
+      const fetchedCart = await cartService.getUserCartPg(cust_id);
+      //console.log(fetchedCart)
+      const fetchedCartData = fetchedCart.data.singleUserCart
+      console.log("Fetched Cart Data:", fetchedCartData); 
+    
+      // Set the merged cart items
+      setCartItems(fetchedCartData);
 
-      } catch(err) {
-        setError('Failed to fetch products')
-        console.error('Error fetching products:', err);
-      } finally {
-        setLoading(false);
-      }
-
+    } catch(err) {
+      setError('Failed to fetch products')
+      console.error('Error fetching products:', err);
+    } finally {
+      setLoading(false);
     }
 
+  }
+
+  useEffect(() => {
     fetchCartItems();
   }, [cust_id]);
 
@@ -101,10 +101,15 @@ const CartCheckOutPage = () => {
     (acc, item) => acc + item.pdt_price * item.qty,
     0
   );
+
+  const total_qty = cartItems.reduce(
+    (acc, item) => acc + item.qty,
+    0
+  );
     
 
   return (
-    <div className="min-h-screen bg-white px-4 sm:px-8 py-6 pb-20">
+    <div className="mt-2 min-h-screen bg-white px-4 sm:px-8 py-6 pb-20">
       
       <h1 className="text-2xl sm:text-3xl font-bold mb-6 mt-1">
         Your Cart 🍵
@@ -122,7 +127,11 @@ const CartCheckOutPage = () => {
         <div className="space-y-4">
           <CartsSummary subtotal={subtotal} />
           <CartsNote />
-          <CartsActions />
+          <CartsActions 
+            total_qty={total_qty} 
+            subtotal={subtotal} 
+            onCartReset={fetchCartItems}
+          />
         </div>
        
       </div>
