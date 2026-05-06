@@ -122,7 +122,7 @@ function MerchStatsRow({ merchant_id }) {
 
       const ratingStats = fetchedReviews.data.ratingStats;
 
-      // console.log("Review Data:", ratingStats);
+      console.log("Review Data:", ratingStats);
 
       const overallAvgRating = ratingStats.overall_avg_rating;
       const todayAvgRating = ratingStats.today_avg_rating;

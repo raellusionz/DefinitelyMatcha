@@ -11,7 +11,7 @@ import ProfilePage from "../features/profile/ProfilePage";
 import ProfileCardPage from "../features/card/ProfileCardPage";
 import TransactionHistPage from "../features/transaction/TransactionHistPage";
 import LoginPage from "../auth/LoginPage";
-import ProfileEditPage from "../features/profile/EditProfile/ProfileEdit";
+import ProfileEditPage from "../features/profile/ProfileEdit";
 
 
 import MerchantBottomBar from '../components/merchant_layout/BottomBar'

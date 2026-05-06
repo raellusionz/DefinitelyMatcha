@@ -4,7 +4,7 @@ const AccountController = require('../controllers/accountController');  // Impor
 
 // Define your routes
 
-router.post('/getCustomerAccountDetails', AccountController.getCustomerAccountDetails)
-
+router.post('/getCustomerAccountDetailsPg', AccountController.getCustomerAccountDetailsPg)
+router.patch('/updateCustomerAccountPg',AccountController.updateCustomerAccountPg)
 
 module.exports = router;  // Export the router

@@ -1,22 +1,76 @@
-import { useMemo, useState } from "react";
-import getCustomerAccountDetail
+import { useMemo, useState, useEffect } from "react";
+import accountService from "../../api/accountService";
+import { useUser } from "../../context/userContext";
+
+const countryOptions = [
+  { label: "SG +65", value: "+65" },
+  { label: "MY +60", value: "+60" },
+  { label: "ID +62", value: "+62" },
+  { label: "TH +66", value: "+66" },
+  { label: "PH +63", value: "+63" },
+  { label: "US/CA +1", value: "+1" },
+];
+
+const countryCodes = countryOptions.map((country) => country.value);
+
+const splitPhoneNumber = (savedNumber = "") => {
+  const matchedCountryCode = countryCodes.find((code) =>
+    savedNumber.startsWith(code)
+  );
+
+  if (matchedCountryCode) {
+    return {
+      countryCode: matchedCountryCode,
+      phoneNumber: savedNumber.slice(matchedCountryCode.length),
+    };
+  }
+
+  return {
+    countryCode: "+65",
+    phoneNumber: savedNumber,
+  };
+};
 
 const ProfileEditPage = () => {
-  const [fullName, setFullName] = useState("Elena Rose");
-  const [phone, setPhone] = useState("+1 (555) 924-1283");
-  const [password, setPassword] = useState("••••••••••••");
+  const [fullName, setFullName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [countryState, setCountryState] = useState("+65");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(true);  // Loading state for handling fetch delays
+  const [error, setError] = useState(null); 
+  const { userId: cust_id } = useUser();
 
-  const cust_id = 1
+  //const cust_id = 1
 
-//   const loadProfile = async() => {
-//     try{
-//         const fetchProfile = await 
+  const loadProfile = async() => {
+    try{
+      console.log(cust_id)
+      const fetchProfile = await accountService.getCustomerAccountDetailsPg(cust_id)
+      const fetchedProfileData = fetchProfile.data.singleCustomerInfo
+      const { countryCode, phoneNumber } = splitPhoneNumber(
+        fetchedProfileData.cust_number
+      );
+      setCountryState(countryCode);
+      setPhone(phoneNumber || "");
+      setFullName(fetchedProfileData.cust_name)
+      setUserName(fetchedProfileData.user_name);
+      setEmail(fetchedProfileData.cust_email);
 
-//     } catch(error)
-//   }
+      console.log(fetchedProfileData)
+
+    } catch(error) {
+      console.error(error);
+      setError("Failed to fetch profile data");
+    }finally{
+      setLoading(false);
+    }
+      
+  }
 
   const strength = useMemo(() => {
     if (!password || password === "••••••••••••") {
@@ -78,22 +132,81 @@ const ProfileEditPage = () => {
     };
   }, [password, confirmPassword]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log({
-      fullName,
-      email: "elena.rose@ritual.com",
-      phone,
-      password,
-      confirmPassword,
-    });
+    const fullPhoneNumber = `${countryState}${phone}`;
+    try{
+      const response = await accountService.updateCustomerAccountPg(
+        cust_id,
+        fullName,
+        fullPhoneNumber,
+        confirmPassword
+      );
+
+      console.log(response.data);
+      alert("Profile updated successfully");
+    } catch (error) {
+      console.error(error);
+      setError("Failed to update profile");
+    }
+    
   };
+  
+  useEffect(() => {
+    if (!cust_id) return;
+    loadProfile()
+  }, [cust_id])
+
+  if (loading) return (
+      <div className="flex flex-col items-center
+          justify-center h-48 gap-3">
+        <div className="w-9 h-9 rounded-full
+          border-[2.5px] border-transparent
+          border-t-gray-900 border-b-gray-200
+          animate-spin" />
+        <p className="text-sm text-gray-400">
+          Loading Profile...
+        </p>
+      </div>
+  );
+  if (error) {
+    return (
+      <div className="min-h-screen bg-stone-50 font-body text-stone-900">
+        <main className="mx-auto max-w-xl px-6 pt-12">
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-12 font-body text-stone-900">
+    
+    <div className="min-h-screen bg-stone-50 mt-2 pb-24 font-body text-stone-900">
+      <style>
+      {`
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
-      <main className="mx-auto max-w-[600px] px-6 pt-12">
+        .material-symbols-outlined {
+          font-family: 'Material Symbols Outlined';
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .font-body {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .font-serif {
+          font-family: 'Noto Serif', serif;
+        }
+      `}
+    </style>
+
+      
+      <main className="mx-auto w-full max-w-xl px-6 pt-6">
         {/* Profile Photo */}
         <section className="mb-12 flex flex-col items-center">
           <div className="group relative">
@@ -147,7 +260,7 @@ const ProfileEditPage = () => {
             </label>
 
             <div className="flex w-full items-center justify-between rounded-lg border border-stone-300/40 bg-stone-100 px-4 py-3 text-stone-900">
-              <span>elena.rose@ritual.com</span>
+              <span>{userName}</span>
               <span className="material-symbols-outlined text-[18px]">
                 lock
               </span>
@@ -161,7 +274,7 @@ const ProfileEditPage = () => {
             </label>
 
             <div className="flex w-full items-center justify-between rounded-lg border border-stone-300/40 bg-stone-100 px-4 py-3 text-stone-900">
-              <span>elena.rose@ritual.com</span>
+              <span>{email}</span>
               <span className="material-symbols-outlined text-[18px]">
                 lock
               </span>
@@ -263,35 +376,31 @@ const ProfileEditPage = () => {
               Phone Number
             </label>
 
-            <input
-              className="w-full rounded-lg border border-stone-300 bg-white px-4 py-3 text-stone-900 outline-none transition-all duration-200 focus:border-green-950 focus:ring-2 focus:ring-green-950/10"
-              placeholder="+1 (000) 000-0000"
-              type="tel"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-            />
-          </div>
+            <div className="flex gap-2">
+              <select
+                className="w-[130px] rounded-lg border border-stone-300 bg-white px-3 py-3 text-stone-900 outline-none transition-all duration-200 focus:border-green-950 focus:ring-2 focus:ring-green-950/10"
+                value={countryState}
+                onChange={(event) => setCountryState(event.target.value)}
+              >
+                <option value="+65">SG +65</option>
+                <option value="+60">MY +60</option>
+                <option value="+62">ID +62</option>
+                <option value="+66">TH +66</option>
+                <option value="+63">PH +63</option>
+                <option value="+1">US/CA +1</option>
+              </select>
 
-          {/* Preferences */}
-          <div className="pt-3">
-            <div className="rounded-xl border border-green-950/5 bg-stone-100 p-6">
-              <h3 className="mb-4 font-serif text-2xl font-medium text-green-950">
-                Tea Ritual Preferences
-              </h3>
-
-              <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-green-950/5 px-3 py-1 text-[10px] font-semibold text-green-950">
-                  CEREMONIAL GRADE
-                </span>
-                <span className="rounded-full bg-green-950/5 px-3 py-1 text-[10px] font-semibold text-green-950">
-                  OAT MILK
-                </span>
-                <span className="rounded-full bg-green-950/5 px-3 py-1 text-[10px] font-semibold text-green-950">
-                  NO SWEETENER
-                </span>
-              </div>
+              <input
+                className="flex-1 rounded-lg border border-stone-300 bg-white px-4 py-3 text-stone-900 outline-none transition-all duration-200 focus:border-green-950 focus:ring-2 focus:ring-green-950/10"
+                placeholder="81234567"
+                type="tel"
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
+              />
             </div>
           </div>
+
+          
 
           {/* Buttons */}
           <div className="mt-12 pt-6">
@@ -303,24 +412,44 @@ const ProfileEditPage = () => {
               <span className="material-symbols-outlined">check_circle</span>
             </button>
 
-            <button
-              type="button"
-              className="mt-4 w-full py-2 text-xs font-semibold uppercase tracking-widest text-green-950/60 transition-colors hover:text-red-700"
-            >
-              Deactivate Account
-            </button>
+            
           </div>
         </form>
       </main>
 
-      {/* Mobile Bottom Progress */}
-      <div className="fixed bottom-8 left-1/2 w-32 -translate-x-1/2 rounded-full bg-stone-200/80 px-4 py-1 shadow-sm backdrop-blur-md md:hidden">
-        <div className="relative h-1 overflow-hidden rounded-full bg-green-950/10">
-          <div className="absolute h-full w-3/4 rounded-full bg-green-950" />
-        </div>
-      </div>
+      
     </div>
   );
 }
 
 export default ProfileEditPage
+
+
+
+// {/* Preferences */}
+//           <div className="pt-3">
+//             <div className="rounded-xl border border-green-950/5 bg-stone-100 p-6">
+//               <h3 className="mb-4 font-serif text-2xl font-medium text-green-950">
+//                 Tea Ritual Preferences
+//               </h3>
+
+//               <div className="flex flex-wrap gap-2">
+//                 <span className="rounded-full bg-green-950/5 px-3 py-1 text-[10px] font-semibold text-green-950">
+//                   CEREMONIAL GRADE
+//                 </span>
+//                 <span className="rounded-full bg-green-950/5 px-3 py-1 text-[10px] font-semibold text-green-950">
+//                   OAT MILK
+//                 </span>
+//                 <span className="rounded-full bg-green-950/5 px-3 py-1 text-[10px] font-semibold text-green-950">
+//                   NO SWEETENER
+//                 </span>
+//               </div>
+//             </div>
+//           </div>
+
+{/* <button
+              type="button"
+              className="mt-4 w-full py-2 text-xs font-semibold uppercase tracking-widest text-green-950/60 transition-colors hover:text-red-700"
+            >
+              Deactivate Account
+            </button> */}
