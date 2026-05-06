@@ -2,7 +2,8 @@
 // import { STATS } from "./mockData";
 import merchTransactionService from '../transaction/MerchTransactionService'
 import { useEffect, useState } from "react";
-import {getRevenueChangeText, getSingaporeDateString,} from "./MerchHelpers";
+import {getRevenueChangeText, getSingaporeDateString, getReviewChangeText} from "./MerchHelpers";
+import reviewService from '../../api/reviewService';
 
 const changeClasses = {
   up: "text-[#5a8f63]",
@@ -13,9 +14,9 @@ function MerchStatsRow({ merchant_id }) {
   
   const [ordersToday, setOrdersToday] = useState({
     icon: "🛍️", 
-    value: "24",   
+    value: "0",   
     name: "Orders today",  
-    change: "↑ 12% vs yesterday", 
+    change: "Loading...", 
     dir: "up"
   })
   const [revenueToday, setRevenueToday] = useState({
@@ -27,9 +28,9 @@ function MerchStatsRow({ merchant_id }) {
   });
   const [avgRating, setAvgRating] = useState({
     icon: "⭐",
-    value: "4.9",
+    value: "0.00",
     name: "Avg. rating",
-    change: "↑ from 4.8",
+    change: "Loading...",
     dir: "up",
   });
   const stats = [ordersToday, revenueToday, avgRating];
@@ -37,9 +38,11 @@ function MerchStatsRow({ merchant_id }) {
   const fetchRevenue = async() => {
     try {
       const fetchedRevenue = await merchTransactionService.getDailyRevenueByMerchantPg(merchant_id)
-      console.log(fetchedRevenue)
+      // console.log(fetchedRevenue)
+      
+
       const dailyStats = fetchedRevenue.data.dailyRevenue|| []
-      console.log(dailyStats)
+      // console.log(dailyStats)
       
       const getStatsForDate = (dailyStats, targetDate) => {
         const target = getSingaporeDateString(targetDate);
@@ -112,14 +115,66 @@ function MerchStatsRow({ merchant_id }) {
     }
   }
 
-  const fetchOrders = async() => {
+  const fetchReviews = async () => {
+    try {
+      const fetchedReviews =
+        await reviewService.getMerchantAverageReviewPg(merchant_id);
 
-  }
+      const ratingStats = fetchedReviews.data.ratingStats;
+
+      // console.log("Review Data:", ratingStats);
+
+      const overallAvgRating = ratingStats.overall_avg_rating;
+      const todayAvgRating = ratingStats.today_avg_rating;
+      const yesterdayAvgRating = ratingStats.yesterday_avg_rating;
+      const ratingDifference = ratingStats.rating_difference;
+
+      const ratingChangeText = getReviewChangeText(
+        todayAvgRating,
+        yesterdayAvgRating
+      );
+
+      const ratingDirection =
+        Number(ratingDifference || 0) >= 0 ? "up" : "down";
+
+      setAvgRating({
+        icon: "⭐",
+        value: overallAvgRating
+          ? Number(overallAvgRating).toFixed(2)
+          : "0.00",
+        name: "Avg. rating",
+        change: ratingChangeText,
+        dir: ratingDirection,
+      });
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+
+      setAvgRating({
+        icon: "⭐",
+        value: "0.00",
+        name: "Avg. rating",
+        change: "Failed to load",
+        dir: "down",
+      });
+    }
+  };
+  
 
   useEffect(() => {
-      if (merchant_id) {
-        fetchRevenue();
-      }
+    // if (merchant_id) {
+    //   fetchRevenue();
+    //   fetchReviews()
+    // }
+    if (!merchant_id) return;
+
+    const fetchStats = async () => {
+      await Promise.all([
+        fetchRevenue(),
+        fetchReviews(),
+      ]);
+    };
+
+    fetchStats();
   }, [merchant_id]);
 
   

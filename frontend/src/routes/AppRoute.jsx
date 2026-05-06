@@ -11,6 +11,7 @@ import ProfilePage from "../features/profile/ProfilePage";
 import ProfileCardPage from "../features/card/ProfileCardPage";
 import TransactionHistPage from "../features/transaction/TransactionHistPage";
 import LoginPage from "../auth/LoginPage";
+import ProfileEditPage from "../features/profile/EditProfile/ProfileEdit";
 
 
 import MerchantBottomBar from '../components/merchant_layout/BottomBar'
@@ -56,16 +57,14 @@ function AppRoutes() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/add-card" element={<ProfileCardPage />} />
         <Route path="/transactions" element={<TransactionHistPage />} />
+        <Route path="/editprofile" element={<ProfileEditPage/>}/>
+
+
+
 
         <Route path="/merchHome" element = {<MerchHomePage/>}/>
         <Route path="/merchTransactions" element = {<MerchTransactionHistPage />}/>
         <Route path="/merchProducts" element = {<MerchProductsPage/>}/>
-
-
-
-
-
-
         
 
       </Routes>

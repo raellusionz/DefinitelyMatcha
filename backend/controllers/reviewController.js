@@ -59,6 +59,55 @@ const ReviewController = {
                 error: error.message
             })
         }
+    },
+
+    getMerchantAverageReviewPg : async(req,res) => {
+        try {
+
+            const {merchant_id} = req.body
+
+            const queryText = `
+                SELECT
+                    AVG(merchant_ratings) AS overall_avg_rating,
+
+                    AVG(CASE 
+                    WHEN (date AT TIME ZONE 'Asia/Singapore')::date = CURRENT_DATE
+                    THEN merchant_ratings 
+                    END) AS today_avg_rating,
+
+                    AVG(CASE 
+                    WHEN (date AT TIME ZONE 'Asia/Singapore')::date = CURRENT_DATE - INTERVAL '1 day'
+                    THEN merchant_ratings 
+                    END) AS yesterday_avg_rating,
+
+                    AVG(CASE 
+                    WHEN (date AT TIME ZONE 'Asia/Singapore')::date = CURRENT_DATE
+                    THEN merchant_ratings 
+                    END)
+                    -
+                    AVG(CASE 
+                    WHEN (date AT TIME ZONE 'Asia/Singapore')::date = CURRENT_DATE - INTERVAL '1 day'
+                    THEN merchant_ratings 
+                    END) AS rating_difference
+
+                FROM reviews
+                WHERE merchant_id = $1
+                `;
+            
+
+            const { rows } = await db.pgQuery(queryText, [merchant_id]);
+
+            res.status(200).json({
+                message: "Merchant rating stats retrieved successfully",
+                ratingStats: rows[0],
+            });
+
+        } catch (error) {
+            return res.status(500).json({
+                message: `Failed to retrieve merchant's average review at merchant_id: ${merchant_id}`,
+                error: error.message,
+            });
+        }
     }
     
 }

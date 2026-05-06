@@ -70,9 +70,9 @@ const TransactionReviewSection = ({ transaction }) => {
                         className={star <= rating ? "text-yellow-400" : "text-gray-300"}
                         onMouseEnter={() => { if (!hasReviewed) setRating(star); }}
                         onClick={() => { if (!hasReviewed)
-                            console.log("User clicked star:", star);
-    console.log("Previous rating:", rating);
-    console.log("New rating:", star);
+                            // console.log("User clicked star:", star);
+                            // console.log("Previous rating:", rating);
+                            // console.log("New rating:", star);
                             setRating(star); 
                         }}
                     >

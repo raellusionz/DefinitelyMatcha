@@ -27,6 +27,9 @@ app.use ('/api/merchants', require('./routes/merchantRoutes'))
 
 app.use('/api/cart', require('./routes/cartRoutes'))
 
+//Account Routes
+app.use('/ap/account', require('./routes/accountRoutes'))
+
 
 //Review System Routes
 app.use('/api/reviews', require('./routes/reviewRoutes'))

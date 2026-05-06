@@ -91,73 +91,42 @@ const AccountController = {
         }
     },
 
-    getAllMerchantNamesPg : async (req, res) => {
+    getCustomerAccountDetails : async (req,res) => {
         try {
-            const queryText = 'SELECT merchant_id, merchant_brand_name, merchant_active_status, merchant_lat, merchant_lng from merchant'
-
-            const {rows} = await db.pgQuery(queryText)
             
-            res.status(200).json ({
-                message : `All Merchants has been displayed.`,
-                allMerchantNames : rows
-            })
-
-        } catch (error) {
-            res.status(404).json({
-                message : "No merchants found using PG"
-
-            })
-        }
-    },
-
-    getOneMerchantPg : async (req,res) => {
-        try{
-            const {merchant_id} = req.body
-
-            const queryText = `SELECT merchant_id, merchant_brand_name, merchant_active_status from merchant where merchant_id = $1`
-
-            const {rows} = await db.pgQuery(queryText, [merchant_id])
-            
-            res.status(200).json ({
-                message : `Merchant ${merchant_id} Store Name has been displayed.`,
-                singleMerchantInfo : rows[0]
-            })
-
-        } catch (error) {
-            res.status(404).json({
-                message : "No merchants found using PG"
-            })
-        }
-    },
-
-    handleOpenClosePg: async (req, res) => {
-        try {
-            const { merchant_id, merchant_active_status } = req.body;
-
             const queryText = `
-            UPDATE merchant
-            SET merchant_active_status = $2
-            WHERE merchant_id = $1
-            RETURNING *
+                SELECT 
+                    c.cust_name,
+                    c.cust_email,
+                    c.cust_number,
+                    u.user_name
+                FROM customer c
+                JOIN useraccount u
+                    ON c.global_user_id = u.global_user_id
+                WHERE c.cust_id = $1
             `;
 
-            const values = [merchant_id, merchant_active_status];
+            const {rows} = await db.pgQuery(queryText,[cust_id])
 
-            const { rows } = await db.pgQuery(queryText, values);
+            if (rows.length === 0) {
+                return res.status(404).json({
+                    message: "Customer not found",
+                });
+            }
 
             res.status(200).json({
-                message: `Merchant ${merchant_id} active_status has been set to ${merchant_active_status}.`,
-                singleMerchantInfo: rows[0],
+                message: `Data of User Found`,
+                singleCustomerInfo : rows[0]
             });
 
         } catch (error) {
-            
-            console.error("Error updating merchant_active_status:", error);
             res.status(500).json({
-                message: "Failed to update merchant_active_status using PG",
+                message: "Failed to retrieve User Data",
+                error: error.message
             });
         }
     }
+
 };
 
-module.exports = MerchantController;
+module.exports = AccountController;

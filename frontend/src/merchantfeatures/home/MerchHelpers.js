@@ -35,6 +35,28 @@ export function getRevenueChangeText (todayRevenue, yesterdayRevenue) {
   return "No change vs yesterday";
 };
 
+export function getReviewChangeText(todayValue, yesterdayValue, label = "vs yesterday") {
+  if (yesterdayValue === null || yesterdayValue === undefined) {
+    return `No comparison yet`;
+  }
+
+  if (todayValue === null || todayValue === undefined) {
+    return `No data today`;
+  }
+
+  const difference = Number(todayValue) - Number(yesterdayValue);
+
+  if (difference > 0) {
+    return `↑ ${difference.toFixed(2)} ${label}`;
+  }
+
+  if (difference < 0) {
+    return `↓ ${Math.abs(difference).toFixed(2)} ${label}`;
+  }
+
+  return `No change ${label}`;
+}
+
 export const getSingaporeDateString = (date = new Date()) => {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Singapore",

@@ -20,7 +20,14 @@ const reviewService = {
             merchant_reviews_write : merchant_reviews_write
         })
         return response
-    }
+    },
+
+    getMerchantAverageReviewPg : async(merchant_id) => {
+        const response = await axiosClient.post('/reviews/getMerchantAverageReviewPg',{
+            merchant_id: merchant_id
+        })
+        return response
+    },
 }
 
 export default reviewService

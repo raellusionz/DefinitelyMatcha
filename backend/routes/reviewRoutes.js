@@ -6,5 +6,6 @@ const ReviewController = require('../controllers/reviewController');  // Import 
 
 router.post('/getSingleCustomerReviewPg', ReviewController.getSingleCustomerReviewPg); 
 router.post('/newSingleCustomerReviewPg', ReviewController.newSingleCustomerReviewPg)
+router.post('/getMerchantAverageReviewPg', ReviewController.getMerchantAverageReviewPg)
 
 module.exports = router;  // Export the router
