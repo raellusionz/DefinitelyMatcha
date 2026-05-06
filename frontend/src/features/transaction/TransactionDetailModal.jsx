@@ -2,6 +2,7 @@
 import React, { useState, useEffect, use } from "react";
 import { formatTime } from "./TransactionUtils";
 import transactionService from "./transactionService";
+import TransactionReviewSection from "./TransactionReviewSection";
 
 const TransactionDetailModal = ({ isOpen, transaction, onClose }) => {
     const [activeTab, setActiveTab] = useState("Receipt")
@@ -27,6 +28,8 @@ const TransactionDetailModal = ({ isOpen, transaction, onClose }) => {
             try {
                 setItemsLoading(true);
                 setItemsError(null);
+
+                console.log("tester custmer_id", transaction.cust_id)
 
                 const response = await transactionService.getSingleOrderItemsPg(
                     transaction.merchant_id,
@@ -136,6 +139,8 @@ const TransactionDetailModal = ({ isOpen, transaction, onClose }) => {
                 {transaction.merchant_txn_id}
               </p>
             </div>
+
+            <TransactionReviewSection transaction={transaction} />
 
             {isPaynow && transaction.paynow_ref && (
               <div>

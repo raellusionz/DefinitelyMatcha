@@ -22,7 +22,7 @@ import MerchHomePage from "../merchantfeatures/home/MerchHomePage"
 
 // TestPages
 
-import OldMerchHomePage from "../merchantfeatures/homeold/HomePage"
+
 
 const CustomerRoute = ({ children }) => {
   const { userId, userRole, userLoading } = useUser();
@@ -65,8 +65,7 @@ function AppRoutes() {
 
 
 
-        //TestPages
-        <Route path="/OldMerchHomePage" element = {<OldMerchHomePage/>}/>
+
         
 
       </Routes>

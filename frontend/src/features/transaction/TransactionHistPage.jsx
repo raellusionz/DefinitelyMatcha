@@ -9,6 +9,7 @@ import TransactionDetailModal from "./TransactionDetailModal";
 //import fetchSingleCustomerTransactionsData from "./TransactionData";
 import { groupByDate, formatTime } from "./TransactionUtils";
 import { useUser } from "../../context/userContext";
+import reviewService from "../../api/reviewService";
 const { MastercardIcon, PaynowLogo, MatchaIcon } = transactionSupportLogos;
 
 const TransactionHistory = () => {
@@ -42,10 +43,39 @@ const TransactionHistory = () => {
     fetchSingleCustomerTransactions()
   }, [cust_id, userLoading]);
 
-  const handleTransactionClick = (txn) => {
-    setSelectedTransaction(txn)
-    setModalOpen(true)
-  }
+  
+  const handleTransactionClick = async (txn) => {
+  //   console.log("Clicked txn full object:", txn);
+  // console.log("txn.cust_id:", txn.cust_id);
+  // console.log("cust_id from useUser:", cust_id);
+    try {
+      const fetchedReview = await reviewService.getSingleCustomerReviewPg(
+        txn.merchant_id,
+        txn.merchant_txn_id,
+        txn.cust_id
+      );
+
+      const reviewData = fetchedReview.data;
+
+      setSelectedTransaction({
+        ...txn,
+        hasReviewed: reviewData.hasReviewed,
+        rating: Number(reviewData.rating || 0),
+      });
+
+      setModalOpen(true);
+    } catch (error) {
+      console.log("Failed to fetch review before opening modal:", error);
+
+      setSelectedTransaction({
+        ...txn,
+        hasReviewed: false,
+        rating: 0,
+      });
+
+      setModalOpen(true);
+    }
+  };
 
   const handleCloseModal = () => {
     setModalOpen(false)
@@ -108,3 +138,9 @@ const TransactionHistory = () => {
 };
 
 export default TransactionHistory;
+
+
+// const handleTransactionClick = (txn) => {
+  //   setSelectedTransaction(txn)
+  //   setModalOpen(true)
+  // }

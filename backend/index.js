@@ -27,6 +27,10 @@ app.use ('/api/merchants', require('./routes/merchantRoutes'))
 
 app.use('/api/cart', require('./routes/cartRoutes'))
 
+
+//Review System Routes
+app.use('/api/reviews', require('./routes/reviewRoutes'))
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
