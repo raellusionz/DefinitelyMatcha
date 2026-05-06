@@ -104,6 +104,37 @@ const OrderController = {
         }
     },
 
+    getDailyRevenueByMerchantPg : async(req,res) => {
+           try{
+              const { merchant_id } = req.body; // this line is needed
+   
+               const queryText = `
+                   SELECT 
+                       TO_CHAR(date AT TIME ZONE 'Asia/Singapore', 'YYYY-MM-DD') AS revenue_date,
+                       SUM(amt) AS daily_revenue
+                   FROM transactions
+                   WHERE merchant_id = $1
+                       AND txn_status = 'Completed'
+                   GROUP BY TO_CHAR(date AT TIME ZONE 'Asia/Singapore', 'YYYY-MM-DD')
+                   ORDER BY revenue_date DESC
+               `;
+   
+   
+               const { rows } = await db.pgQuery(queryText, [merchant_id]);
+   
+               res.status(200).json({
+                   message: `Daily revenue for merchant ${merchant_id} retrieved successfully using PG.`,
+                   dailyRevenue: rows,
+               });
+   
+           } catch (error) {
+               res.status(404).json ({
+                   message : `Failed to retrieve daily revenue data for Merchant ${merchant_id} using PG.`,
+                   error: error.message,
+               })
+           }
+       }
+
     
 
 }

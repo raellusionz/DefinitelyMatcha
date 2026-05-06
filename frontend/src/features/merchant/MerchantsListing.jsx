@@ -4,7 +4,7 @@ import MerchantCard from './MerchantsCard';  // Import MerchantCard to display e
 
 function MerchantListing({ merchants, userLocation }) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
         {merchants.length > 0 ? (
             merchants.map((merchant) => (
             <div key={merchant.merchant_id} className="col-span-1">

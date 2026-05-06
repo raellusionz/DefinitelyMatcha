@@ -4,13 +4,25 @@ import { useUser } from '../context/userContext';
 import ProductsPage from '../features/product/ProductsPage'
 import MerchantsPage from '../features/merchant/MerchantsPage'
 import Navbar from '../components/layout/NavBar'
+import PreCartPage from "../features/precart/PreCartPage";
 import CartCheckoutPage from "../features/cart/CartsPage";
 import BottomNavBar from '../components/layout/BottomBar'
 import ProfilePage from "../features/profile/ProfilePage";
 import ProfileCardPage from "../features/card/ProfileCardPage";
 import TransactionHistPage from "../features/transaction/TransactionHistPage";
 import LoginPage from "../auth/LoginPage";
+
+
+import MerchantBottomBar from '../components/merchant_layout/BottomBar'
 import MerchTransactionHistPage from "../merchantfeatures/transaction/MerchTransactionHistPage"
+import MerchProductsPage from "../merchantfeatures/product/MerchProductPage";
+import MerchHomePage from "../merchantfeatures/home/MerchHomePage"
+
+
+
+// TestPages
+
+import OldMerchHomePage from "../merchantfeatures/homeold/HomePage"
 
 const CustomerRoute = ({ children }) => {
   const { userId, userRole, userLoading } = useUser();
@@ -29,6 +41,7 @@ const MerchantRoute = ({ children }) => {
 };
 
 function AppRoutes() {
+  const { userRole } = useUser();
   return (
     <div className="w-full">
       <Navbar />
@@ -37,15 +50,29 @@ function AppRoutes() {
         <Route path="/" element={<MerchantsPage />} />
         <Route path="/merchants" element={<MerchantsPage />} />
         <Route path="/products/:merchant_id" element={<ProductsPage />} />
+        {/* <Route path="/precart" element={<PreCartPage/>}/> */}
         <Route path="/cart" element={<CartCheckoutPage />} />
+        {/* <Route path="/cart/:merchant_id" element={<CartCheckoutPage />} /> */}
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/add-card" element={<ProfileCardPage />} />
         <Route path="/transactions" element={<TransactionHistPage />} />
+
+        <Route path="/merchHome" element = {<MerchHomePage/>}/>
         <Route path="/merchTransactions" element = {<MerchTransactionHistPage />}/>
+        <Route path="/merchProducts" element = {<MerchProductsPage/>}/>
+
+
+
+
+
+        //TestPages
+        <Route path="/OldMerchHomePage" element = {<OldMerchHomePage/>}/>
+        
+
       </Routes>
-      <BottomNavBar/>
+      {userRole === "merchant"  ? MerchantBottomBar : <BottomNavBar />}
     </div>
-  );
+  ); 
 }
 
 export default AppRoutes;

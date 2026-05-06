@@ -6,16 +6,30 @@ const cartController = {
   getUserCartPg: async (req, res) => {
     try {
 
-      const { cust_id } = req.body;
-
+      const { cust_id} = req.body;
       const queryText = `
-          SELECT merchant_id, merchant_pdt_id, pdt_name, pdt_price, COUNT(*)::int as qty
-          FROM cart 
-          WHERE cust_id = $1
-          GROUP BY merchant_id, merchant_pdt_id, pdt_name, pdt_price
+          SELECT 
+              c.merchant_id,
+              m.merchant_brand_name,
+              c.merchant_pdt_id,
+              c.pdt_name,
+              c.pdt_price,
+              COUNT(*)::int AS qty
+          FROM cart c
+          JOIN merchant m
+              ON c.merchant_id = m.merchant_id
+          WHERE c.cust_id = $1
+          GROUP BY 
+              c.merchant_id,
+              m.merchant_brand_name,
+              c.merchant_pdt_id,
+              c.pdt_name,
+              c.pdt_price
       `;
+
+      const values = [cust_id]
       
-      const { rows } = await db.pgQuery(queryText, [cust_id]);
+      const { rows } = await db.pgQuery(queryText, values);
 
       res.status(200).json({
         message: `Cart items for customer ${cust_id}`,
@@ -141,19 +155,41 @@ const cartController = {
 
     getUserCartCheckOutPg : async(req,res) => {
       try {
-        const { cust_id } = req.body;
+        const { cust_id, merchant_id } = req.body;
 
-        const queryText = `
-            SELECT merchant_id, merchant_pdt_id, pdt_name, pdt_price
-            FROM cart 
-            WHERE cust_id = $1
+        const itemsQuery = `
+          SELECT 
+            merchant_id,
+            merchant_pdt_id,
+            pdt_name,
+            pdt_price
+          FROM cart 
+          WHERE cust_id = $1
+          AND merchant_id = $2
+          ORDER BY merchant_pdt_id
         `;
+
+         const totalQuery = `
+          SELECT 
+            COUNT(*)::int AS total_pdt_qty,
+            COALESCE(SUM(pdt_price::numeric), 0)::numeric(10,2) AS total_price
+          FROM cart 
+          WHERE cust_id = $1
+          AND merchant_id = $2
+        `;
+
         
-        const {rows} = await db.pgQuery(queryText, [cust_id])
+        
+        const values = [cust_id, merchant_id]
+        const { rows } = await db.pgQuery(itemsQuery, values);
+        const totalResult = await db.pgQuery(totalQuery, values);
+
 
         res.status(200).json({
             message: `Cart items for customer ${cust_id}`,
             singleUserCheckoutCart: rows,
+            total_pdt_qty: totalResult.rows[0].total_pdt_qty,
+            total_price: totalResult.rows[0].total_price
         });
 
       } catch (error) {
@@ -162,7 +198,39 @@ const cartController = {
                 error: error.message
         })
       }
-    } 
+    },
+
+
+    getListOfUserCart : async(req,res) => {
+      try{
+        const {cust_id} = req.body
+
+        const queryText = `
+          SELECT 
+            c.merchant_id,
+            m.merchant_brand_name,
+            COUNT(*) AS cart_item_count
+          FROM cart c
+          JOIN merchant m
+            ON c.merchant_id = m.merchant_id
+          WHERE c.cust_id = $1
+          GROUP BY c.merchant_id, m.merchant_brand_name;
+        `;
+ 
+        const {rows} = await db.pgQuery(queryText, [cust_id])
+        res.status(200).json({
+          message : `List of Carts  found for Customer ${1}`,
+          listOfUserCart : rows
+        })
+        
+      } catch(error){
+        res.status(404).json({
+            message: `Failed to load the list of carts for Customer ${1}`,
+                error: error.message
+        })
+        
+      }
+    }
 
 };
 

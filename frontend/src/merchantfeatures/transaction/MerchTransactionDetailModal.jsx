@@ -3,11 +3,18 @@ import React, { useState, useEffect, use } from "react";
 import { formatTime } from "./MerchTransactionUtils";
 import transactionService from "./MerchTransactionService";
 
-const TransactionDetailModal = ({ isOpen, transaction, onClose }) => {
-    const [activeTab, setActiveTab] = useState("Receipt")
+const TransactionDetailModal = ({ isOpen, transaction, onClose,onStatusUpdate }) => {
+    const [activeTab, setActiveTab] = useState("receipt")
     const [orderItems, setOrderItems] = useState([])
     const [itemsLoading, setItemsLoading] = useState(false)
     const [itemsError, setItemsError] = useState(null)
+    const [actionLoading, setActionLoading] = useState(false);
+    const [actionError, setActionError] = useState(null);
+    const [txnStatus, setTxnStatus] = useState(transaction?.txn_status || 'Completed');
+
+    useEffect(() => {
+      if (transaction) setTxnStatus(transaction.txn_status || 'completed');
+    }, [transaction]);
 
     useEffect(() => {
         if (!isOpen || !transaction) {
@@ -44,6 +51,51 @@ const TransactionDetailModal = ({ isOpen, transaction, onClose }) => {
 
 
     if (!isOpen || !transaction) return null;
+
+    console.log('txnStatus:', txnStatus, 'transaction.txn_status:', transaction?.txn_status)
+
+    
+    const handleTransactionRefCancelAction = async(action) => {
+
+      // if (action === 'Cancelled') {
+      //   actionLabel = 'Cancelled';
+      // } else {
+      //   actionLabel = 'Refunded';
+      // }
+
+      const actionLabel = action === 'Cancelled' ? 'Cancelled' : 'Refunded'
+      if (!window.confirm(`${actionLabel} this transaction?`)) 
+        return;
+
+      try {
+        console.log("merchant_id:",transaction.merchant_id)
+        console.log("merchant_txn_id",transaction.merchant_txn_id)
+        console.log("actionLabel",  actionLabel)
+
+        setActionLoading(true)
+        setActionError(null)
+        if (action === 'Cancelled') {
+          await transactionService.updateTransactionStatusPg (
+            transaction.merchant_id,
+            transaction.merchant_txn_id,
+            actionLabel
+          )
+        } else if (action === 'Refunded') {
+            await transactionService.updateTransactionStatusPg (
+            transaction.merchant_id,
+            transaction.merchant_txn_id,
+            actionLabel
+          )
+        }
+        setTxnStatus(action);
+        onStatusUpdate(transaction.merchant_txn_id, action); // 👈 add this line
+      } catch(err){
+        setActionError(`Failed to ${actionLabel.toLowerCase()} transaction.`);
+      } finally {
+        setActionLoading(false);
+      }
+      
+    }
 
     const isPaynow = transaction.pay_method === "Paynow";
 
@@ -140,6 +192,30 @@ const TransactionDetailModal = ({ isOpen, transaction, onClose }) => {
                 </p>
               </div>
             )}
+
+            {/* Error */}
+            {actionError && <p className="text-sm text-red-500">{actionError}</p>}
+
+            {/* Action buttons — only show if still completed */}
+            {txnStatus === 'Completed' && (
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => handleTransactionRefCancelAction('Cancelled')}
+                  disabled={actionLoading}
+                  className="flex-1 py-2.5 rounded-xl border border-red-200 text-red-600 text-sm font-medium hover:bg-red-50 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleTransactionRefCancelAction('Refunded')}
+                  disabled={actionLoading}
+                  className="flex-1 py-2.5 rounded-xl border border-amber-200 text-amber-600 text-sm font-medium hover:bg-amber-50 disabled:opacity-50"
+                >
+                  Refund
+                </button>
+              </div>
+            )}
+
           </div>
         )}
 

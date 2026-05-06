@@ -5,6 +5,7 @@ import CartsSummary from './CartsSummary'
 import CartsNote from './CartsNote'
 import { useUser } from '../../context/userContext';  // Adjust according to folder structure
 import cartService from './cartService'
+//import { useParams } from 'react-router-dom';
 
 
 const CartCheckOutPage = () => {
@@ -13,13 +14,15 @@ const CartCheckOutPage = () => {
   const [cartItems, setCartItems] = useState([])
   const [loading, setLoading] = useState(true);  // Loading state for handling fetch delays
   const [error, setError] = useState(null); 
+  const [selectedMerchantId, setSelectedMerchantId] = useState([]);
   const { userId: cust_id } = useUser();
   // const cust_id = 1
 
  
   const fetchCartItems = async() => {
     try {
-      console.log(cust_id)
+      console.log("Customer",cust_id)
+  
       const fetchedCart = await cartService.getUserCartPg(cust_id);
       //console.log(fetchedCart)
       const fetchedCartData = fetchedCart.data.singleUserCart
@@ -29,7 +32,7 @@ const CartCheckOutPage = () => {
       setCartItems(fetchedCartData);
 
     } catch(err) {
-      setError('Failed to fetch products')
+      setError('Failed to fetch cart data')
       console.error('Error fetching products:', err);
     } finally {
       setLoading(false);
@@ -38,13 +41,25 @@ const CartCheckOutPage = () => {
   }
 
   useEffect(() => {
+    if (!cust_id) return; // add this guard
     fetchCartItems();
   }, [cust_id]);
 
-  const updateQuantiy = async (merchant_pdt_id, action) => {
+  const updateQuantiy = async (merchant_id, merchant_pdt_id, action) => {
+
+    // // Now, make the API call to update the backend
+    // const updatedItem = cartItems.find(item => item.merchant_pdt_id === merchant_pdt_id);
+
+    const updatedItem = cartItems.find(
+      item =>
+        item.merchant_id === merchant_id &&
+        item.merchant_pdt_id === merchant_pdt_id
+    );
+
     // First, update the state
     setCartItems((prev) => {
       return prev.map((item) =>
+        item.merchant_id === merchant_id &&
         item.merchant_pdt_id === merchant_pdt_id
           ? {
               ...item,
@@ -57,8 +72,8 @@ const CartCheckOutPage = () => {
       );
     });
 
-    // Now, make the API call to update the backend
-    const updatedItem = cartItems.find(item => item.merchant_pdt_id === merchant_pdt_id);
+    if (!updatedItem) return;
+    
 
     if (action === "increase") {
       // Ensure only one API call is triggered
@@ -73,6 +88,7 @@ const CartCheckOutPage = () => {
 
     if (action === "decrease") {
       // Ensure only one API call is triggered
+      console.log("Triggered")
       await cartService.reduceQuantityCartPg(
         cust_id,
         updatedItem.merchant_id,
@@ -82,11 +98,23 @@ const CartCheckOutPage = () => {
   };
 
 
-  const removeItem = async (merchant_pdt_id) => {
-    setCartItems((prev) => prev.filter((item) => item.merchant_pdt_id !== merchant_pdt_id));
+  const removeItem = async (merchant_id, merchant_pdt_id) => {
+    const itemToRemove = cartItems.find(
+      item =>
+        item.merchant_id === merchant_id &&
+        item.merchant_pdt_id === merchant_pdt_id
+    );
 
-    const itemToRemove = cartItems.find(item => item.merchant_pdt_id === merchant_pdt_id);
-    
+    setCartItems((prev) =>
+      prev.filter(
+        item =>
+          !(
+            item.merchant_id === merchant_id &&
+            item.merchant_pdt_id === merchant_pdt_id
+          )
+      )
+    );
+
     if (itemToRemove) {
       await cartService.removeCartItemPg(
         cust_id,
@@ -96,40 +124,79 @@ const CartCheckOutPage = () => {
     }
   };
 
+  // Toggle a single merchant in/out of the selected array
+  const toggleMerchant = (merchant_id) => {
+    setSelectedMerchantId((prev) =>
+      prev.includes(String(merchant_id))
+        ? prev.filter((id) => id !== String(merchant_id))
+        : [...prev, String(merchant_id)]
+    );
+  };
 
-  const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.pdt_price * item.qty,
+  const groupedByMerchant = cartItems.reduce((acc, item) => {
+    const key = item.merchant_id;
+    if (!acc[key]) {
+      acc[key] = { 
+        merchant_brand_name: item.merchant_brand_name, 
+        items: [] 
+      };
+    }
+    acc[key].items.push(item);
+    return acc;
+  }, {});
+
+  // PUT IT HERE
+  useEffect(() => {
+    const merchantId = Object.keys(groupedByMerchant);
+
+    if (merchantId.length > 0 && selectedMerchantId.length === 0) {
+      setSelectedMerchantId(merchantId);
+    }
+  }, [cartItems]);
+
+
+  const selectedMerchantItems = cartItems.filter((item) =>
+    selectedMerchantId.includes(String(item.merchant_id))
+  );
+  
+      
+  const subtotal = selectedMerchantItems.reduce(
+    (acc, item) => acc +  Number(item.pdt_price) * item.qty,
     0
   );
 
-  const total_qty = cartItems.reduce(
+  const total_qty = selectedMerchantItems.reduce(
     (acc, item) => acc + item.qty,
     0
   );
-    
+
 
   return (
-    <div className="mt-2 min-h-screen bg-white px-4 sm:px-8 py-6 pb-20">
+    <div className="mt-2 min-h-screen bg-white px-4 sm:px-8 py-6 pb-24">
       
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 mt-1">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-1 mt-1">
         Your Cart 🍵
       </h1>
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <CartsList
-            cartItems = {cartItems}
+            groupedByMerchant={groupedByMerchant}
+            selectedMerchantId={selectedMerchantId}
+            toggleMerchant={toggleMerchant}
             updateQuantity = {updateQuantiy}
             removeItem = {removeItem}
           />
-         </div>
+        </div>
           {/* RIGHT */}
         <div className="space-y-4">
           <CartsSummary subtotal={subtotal} />
           <CartsNote />
           <CartsActions 
-            total_qty={total_qty} 
-            subtotal={subtotal} 
+            cust_id={cust_id}
+            selectedMerchantId={selectedMerchantId}
+            //total_qty={total_qty} 
+            //subtotal={subtotal} 
             onCartReset={fetchCartItems}
           />
         </div>

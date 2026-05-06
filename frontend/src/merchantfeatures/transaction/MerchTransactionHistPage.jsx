@@ -1,7 +1,7 @@
 //L1
 
 import React, { useState, useEffect, use } from "react";
-import merchTransactionService from "./MerchTransactionService";
+import merchTransactionService from './MerchTransactionService'
 import TransactionFilter from "../transaction/MerchTransactionFilter";
 import transactionSupportLogos from "../transaction/MerchTransactionIcons";
 import TransactionList from "./MerchTransactionList";
@@ -54,6 +54,17 @@ const TransactionHistory = () => {
     setSelectedTransaction(null)
   }
 
+  const handleStatusUpdate = (merchant_txn_id, newStatus) => {
+  setTransactions(prev =>
+    prev.map(txn =>
+      txn.merchant_txn_id === merchant_txn_id
+        ? { ...txn, txn_status: newStatus }
+        : txn
+    )
+  );
+};
+
+
   const filtered =
     filterMethod === "All"
       ? transactions
@@ -102,6 +113,7 @@ const TransactionHistory = () => {
           isOpen={modalOpen}
           transaction={selectedTransaction}
           onClose= {handleCloseModal}
+          onStatusUpdate={handleStatusUpdate}
           />
         </div>
       </div>

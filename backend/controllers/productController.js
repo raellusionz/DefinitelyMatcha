@@ -193,6 +193,41 @@ const ProductController = {
                 error: error.message
             })
         }
+    },
+
+    updateSingleProductMerchantPg : async(req,res) => {
+        try {
+            const {merchant_id, merchant_pdt_id, pdt_category, pdt_name, pdt_price, pdt_desc} = req.body
+
+            const queryText = `
+                UPDATE products
+                SET 
+                    pdt_category = $1,
+                    pdt_name = $2,
+                    pdt_price = $3,
+                    pdt_desc = $4
+                WHERE merchant_id = $5
+                AND merchant_pdt_id = $6
+                RETURNING *;
+            `;
+
+           const values = [pdt_category, pdt_name, pdt_price, pdt_desc, merchant_id, merchant_pdt_id];
+            
+            const {rows} = await db.pgQuery(queryText, values)
+
+            res.status(200).json ({
+                message : {
+                    message : `Item has been updated for ${merchant_id} Using PG.`,
+                    updatedProduct : rows[0]
+                }
+            })
+
+
+        } catch (error) {
+            res.status(500).json({
+                error : "Failed to update product"
+            })
+        }
     }
 }
 

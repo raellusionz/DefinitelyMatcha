@@ -163,6 +163,70 @@ const MerchTransactionController = {
             })
         }
     },
+
+    updateTransactionStatusPg : async(req,res) => {
+        try{
+            const {merchant_id, merchant_txn_id, txn_status} = req.body
+            
+            const values = [merchant_id, merchant_txn_id, txn_status]
+
+            const queryText = `UPDATE transactions 
+                SET txn_status = $3,
+                cancelref_date = NOW()
+                WHERE merchant_id = $1 AND merchant_txn_id = $2 
+                RETURNING *
+            `
+            
+            const {rows} = await db.pgQuery(queryText, values)
+
+            res.status(200).json({
+                message: `Transaction ${merchant_txn_id} for Merchant ${merchant_id} updated successfully`,
+                updatedTransaction: rows[0]
+            });
+
+        } catch (error) {
+            res.status(400).json ({
+                message : `Transaction Status for Merchant ${merchant_id} at Transaction ${merchant_txn_id} failed to update.`,
+                error : error.message
+            })
+        }
+        
+        
+    },
+
+    getDailyRevenueByMerchantPg : async(req,res) => {
+        try{
+           const { merchant_id } = req.body; // this line is needed
+
+            const queryText = `
+                SELECT 
+                    TO_CHAR(date AT TIME ZONE 'Asia/Singapore', 'YYYY-MM-DD') AS revenue_date,
+                    SUM(amt) AS daily_revenue,
+                    COUNT(*) AS daily_orders
+                FROM transactions
+                WHERE merchant_id = $1
+                    AND txn_status = 'Completed'
+                GROUP BY TO_CHAR(date AT TIME ZONE 'Asia/Singapore', 'YYYY-MM-DD')
+                ORDER BY revenue_date DESC
+            `;
+
+
+            const { rows } = await db.pgQuery(queryText, [merchant_id]);
+
+            res.status(200).json({
+                message: `Daily revenue for merchant ${merchant_id} retrieved successfully using PG.`,
+                dailyRevenue: rows,
+            });
+
+        } catch (error) {
+            res.status(404).json ({
+                message : `Failed to retrieve daily revenue data for Merchant ${merchant_id} using PG.`,
+                error: error.message,
+            })
+        }
+    }
+
+    
 }
 
 module.exports = MerchTransactionController

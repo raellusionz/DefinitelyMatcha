@@ -7,6 +7,10 @@ const { MastercardIcon, PaynowLogo, MatchaIcon } = transactionSupportLogos;
 
 const TransactionCard = ({ txn, isLast , onTransactionClick}) => {
   const isPaynow = txn.pay_method === "Paynow";
+  const isCancelled = txn.txn_status === 'Cancelled';
+  const isRefunded = txn.txn_status === 'Refunded';
+  const isInactive = isCancelled || isRefunded;
+
 
   return (
     <div
@@ -42,8 +46,14 @@ const TransactionCard = ({ txn, isLast , onTransactionClick}) => {
       </div>
 
       <div className="text-right flex-shrink-0 ml-4">
-        <div className="font-bold text-gray-900">${txn.amt}</div>
+        <div className={`font-bold ${isInactive ? "line-through text-gray-400" : "text-gray-900"}`}>
+          ${txn.amt}
+        </div>
+
         <div className="text-xs text-gray-500">{formatTime(txn.date)}</div>
+
+        {isCancelled && <span className="text-xs font-medium text-red-500">Cancelled</span>}
+        {isRefunded && <span className="text-xs font-medium text-amber-500">Refunded</span>}
       </div>
     </div>
   );

@@ -1,21 +1,34 @@
 // BottomNavBar.jsx
 import React from 'react';
-import { Link } from 'react-router-dom'; // Import Link from React Router
-import { UserCircleIcon, ShoppingCartIcon} from '@heroicons/react/24/solid';
+import { Link, useLocation } from 'react-router-dom'; // Import Link from React Router
+import { UserCircleIcon} from '@heroicons/react/24/solid';
 import { Icon } from '@iconify/react';
 //import { useUser } from '../../context/userContext';  // Adjust according to folder structure
 
 const BottomNavBar = () => {
 
-  const cust_id = 1
+  //const cust_id = 1
+
+  const {pathname} = useLocation();
+  const isActive = (path) =>
+    pathname === path || pathname.startsWith(path)
+
+
   return (
     <div className="fixed bottom-0 left-0 w-full bg-white shadow-[0_-2px_6px_rgba(0,0,0,0.1)] border-t border-gray-200">
       <div className="flex justify-around items-center py-3">
+
+        {/* Profile Tab */}
+        <Link to="/Home" className="flex flex-col items-center">
+          <UserCircleIcon className="w-6 h-6 text-gray-700" />
+          <span className="text-sm text-gray-600">Profile</span>
+        </Link>
         
         {/* Products Tab */}
         <Link to="/products" className="flex flex-col items-center">
              <iconify-icon icon="gcp:retail-api" width="24" height="24"></iconify-icon>
             <span className="text-sm text-gray-600">Products</span>
+     
         </Link>
 
         {/* Transactions Tab */}
@@ -24,11 +37,7 @@ const BottomNavBar = () => {
             <span className="text-sm text-gray-600">Orders</span>
         </Link>
         
-        {/* Profile Tab */}
-        <Link to="/profile" className="flex flex-col items-center">
-          <UserCircleIcon className="w-6 h-6 text-gray-700" />
-          <span className="text-sm text-gray-600">Profile</span>
-        </Link>
+        
       </div>
     </div>
   );
@@ -36,7 +45,3 @@ const BottomNavBar = () => {
 
 export default BottomNavBar;
 
-//  <Link to={`/transactions/${cust_id}`} className="flex flex-col items-center">
-//              <Icon icon="icon-park-outline:transaction-order" className="text-gray-700 w-6 h-6" />
-//             <span className="text-sm text-gray-600">Orders</span>
-//         </Link>

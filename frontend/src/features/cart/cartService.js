@@ -1,9 +1,10 @@
 import axiosClient from '../../api/axiosClient'
 
 const cartService = {
-    getUserCartPg : async (cust_id) => {
+    getUserCartPg : async (cust_id,merchant_id) => {
         const response = await axiosClient.post('/cart/getUserCartPg', {
-            cust_id: cust_id 
+            cust_id: cust_id,
+            merchant_id:merchant_id
         })
         return response
     },
@@ -55,8 +56,16 @@ const cartService = {
     
     },
 
-    getUserCartCheckOutPg : async (cust_id) => {
+    getUserCartCheckOutPg : async (cust_id, merchant_id) => {
         const response = await axiosClient.post('/cart/getUserCartCheckOutPg', {
+            cust_id: cust_id,
+            merchant_id : merchant_id
+        })
+        return response
+    },
+
+    getListOfUserCart: async (cust_id) => {
+        const response = await axiosClient.post('/cart/getListOfUserCart', {
             cust_id: cust_id 
         })
         return response

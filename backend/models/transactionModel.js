@@ -35,7 +35,18 @@ const TransactionModel  = sequelize.define('TransactionModel',{
     pay_method : {
         type : DataTypes.STRING(255),
         allowNull : false
-    }, 
+    },
+    txn_status : {
+        type : DataTypes.STRING(20),
+        defaultValue : 'Completed',
+        allowNull : false
+    },
+    
+    cancelref_date : {
+        type : DataTypes.DATE,
+        allowNull : true
+    }
+
 }, {
     tableName : 'transactions',
     timestamps : false

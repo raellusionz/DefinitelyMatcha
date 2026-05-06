@@ -1,0 +1,163 @@
+//const {pgQuery: db_pg, ormQuery: db_orm} = require('../config/db') only the function pgQuery is attached to the db_pg so just db_pg(queryText)
+const db = require("../config/db") // db will contain all the methods from the module, and you can directly use db.pgQuery() to call the function.
+
+
+const AccountController = {
+    // CREATE MERCHANT ACCOUNT
+    createAccount: async (req, res) => {
+        try {
+
+            const { merchant_login, merchant_pass } = req.body;
+
+            const existingMerchant = await MerchantModel.findOne({
+                where: { merchant_login }
+            });
+
+            if (existingMerchant) {
+                return res.status(400).json({
+                    message: "Merchant login already exists"
+                });
+            }
+
+            const newMerchant = await MerchantModel.create({
+                merchant_login,
+                merchant_pass
+            });
+
+            res.status(201).json({
+                message: "Merchant account created",
+                merchant: newMerchant
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                message: "Error creating merchant",
+                error: error.message
+            });
+        }
+    },
+
+
+    // MERCHANT LOGIN
+    loginMerchant: async (req, res) => {
+        try {
+
+            const { merchant_login, merchant_pass } = req.body;
+
+            const merchant = await MerchantModel.findOne({
+                where: { merchant_login }
+            });
+
+            if (!merchant) {
+                return res.status(404).json({
+                    message: "Merchant not found"
+                });
+            }
+
+            if (merchant.merchant_pass !== merchant_pass) {
+                return res.status(401).json({
+                    message: "Invalid password"
+                });
+            }
+
+            res.status(200).json({
+                message: "Login successful",
+                merchant_id: merchant.merchant_id,
+                merchant_login: merchant.merchant_login
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                message: "Login error",
+                error: error.message
+            });
+        }
+    },
+
+
+    // LOGOUT
+    logoutMerchant: async (req, res) => {
+        try {
+
+            res.status(200).json({
+                message: "Merchant logged out"
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                message: "Logout error",
+                error: error.message
+            });
+        }
+    },
+
+    getAllMerchantNamesPg : async (req, res) => {
+        try {
+            const queryText = 'SELECT merchant_id, merchant_brand_name, merchant_active_status, merchant_lat, merchant_lng from merchant'
+
+            const {rows} = await db.pgQuery(queryText)
+            
+            res.status(200).json ({
+                message : `All Merchants has been displayed.`,
+                allMerchantNames : rows
+            })
+
+        } catch (error) {
+            res.status(404).json({
+                message : "No merchants found using PG"
+
+            })
+        }
+    },
+
+    getOneMerchantPg : async (req,res) => {
+        try{
+            const {merchant_id} = req.body
+
+            const queryText = `SELECT merchant_id, merchant_brand_name, merchant_active_status from merchant where merchant_id = $1`
+
+            const {rows} = await db.pgQuery(queryText, [merchant_id])
+            
+            res.status(200).json ({
+                message : `Merchant ${merchant_id} Store Name has been displayed.`,
+                singleMerchantInfo : rows[0]
+            })
+
+        } catch (error) {
+            res.status(404).json({
+                message : "No merchants found using PG"
+            })
+        }
+    },
+
+    handleOpenClosePg: async (req, res) => {
+        try {
+            const { merchant_id, merchant_active_status } = req.body;
+
+            const queryText = `
+            UPDATE merchant
+            SET merchant_active_status = $2
+            WHERE merchant_id = $1
+            RETURNING *
+            `;
+
+            const values = [merchant_id, merchant_active_status];
+
+            const { rows } = await db.pgQuery(queryText, values);
+
+            res.status(200).json({
+                message: `Merchant ${merchant_id} active_status has been set to ${merchant_active_status}.`,
+                singleMerchantInfo: rows[0],
+            });
+
+        } catch (error) {
+            
+            console.error("Error updating merchant_active_status:", error);
+            res.status(500).json({
+                message: "Failed to update merchant_active_status using PG",
+            });
+        }
+    }
+};
+
+module.exports = MerchantController;

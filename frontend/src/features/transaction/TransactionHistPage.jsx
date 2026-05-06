@@ -62,7 +62,7 @@ const TransactionHistory = () => {
   return (
     <div className="font-sans min-h-screen bg-white pb-20">
       <div className="w-full shadow-md">
-        <div className="mt-2 mx-auto w-full max-w-md lg:max-w-3xl px-4 sm:px-6 lg:px-8 py-1">
+        <div className="mt-3 mx-auto w-full max-w-md lg:max-w-3xl px-4 sm:px-6 lg:px-8 py-1">
 
           {/* Title */}
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-gray-900 mb-4">

@@ -8,6 +8,11 @@ const TransactionDetailModal = ({ isOpen, transaction, onClose }) => {
     const [orderItems, setOrderItems] = useState([])
     const [itemsLoading, setItemsLoading] = useState(false)
     const [itemsError, setItemsError] = useState(null)
+    const [txnStatus, setTxnStatus] = useState(transaction?.txn_status || 'Completed');
+
+    useEffect(() => {
+      if (transaction) setTxnStatus(transaction.txn_status || 'Completed');
+    }, [transaction]);
 
     useEffect(() => {
         if (!isOpen || !transaction) {
@@ -140,7 +145,20 @@ const TransactionDetailModal = ({ isOpen, transaction, onClose }) => {
                 </p>
               </div>
             )}
+
+            {/* Status badge — read only */}
+            {txnStatus !== 'Completed' && (
+              <div className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                txnStatus === 'Cancelled'
+                  ? 'bg-red-50 text-red-600'
+                  : 'bg-amber-50 text-amber-600'
+              }`}>
+                {txnStatus}
+              </div>
+            )}
+
           </div>
+
         )}
 
         {activeTab === "items" && (

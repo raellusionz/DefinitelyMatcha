@@ -12,5 +12,6 @@ router.post('/addSingleProductMerchantPg', productController.addSingleProductMer
 router.post('/addSingleProductMerchantORM', productController.addSingleProductMerchantORM)
 router.delete('/deleteSingleProductMerchantPg', productController.deleteSingleProductMerchantPg)
 router.delete('/deleteSingleProductMerchantORM', productController.deleteSingleProductMerchantORM)
+router.patch('/updateSingleProductMerchantPg', productController.updateSingleProductMerchantPg)
 
 module.exports = router;  // Export the router

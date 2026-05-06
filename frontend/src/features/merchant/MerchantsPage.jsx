@@ -26,6 +26,7 @@ const MerchantsPage = () => {
             try {
                 const fetchedMerchants = await merchantsService.getAllMerchantNames();
                 const fetchedMerchantsData = fetchedMerchants.data.allMerchantNames;
+                console.log(fetchedMerchantsData)
                 setMerchants(fetchedMerchantsData); // raw, unsorted
             } catch(err) {
                 setError('Failed to fetch products');
@@ -72,9 +73,9 @@ const MerchantsPage = () => {
     if(error) return <div>(error)</div>
 
     return (
-      <div className="container item-center mx-auto mt-2 p-2 pb-20">
+      <div className="mx-auto mt-4 max-w-5xl px-4 pb-24">
         <GeolocationComponent onLocationFetched={(loc) => setUserLocation(loc)} />
-        <form className="max-w-s mx-auto p-3 m-2">   
+        <form className="mx-auto mb-6 mt-2 w-full max-w-4xl"> 
           <div className="relative flex items-center">
             {/* Search Icon */}
             <div className="absolute left-3 text-gray-500">

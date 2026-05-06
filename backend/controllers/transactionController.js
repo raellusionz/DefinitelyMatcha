@@ -171,7 +171,9 @@ const TransactionController = {
                 error: error.message
             })
         }
-    }
+    },
+
+    
 }
 
 module.exports = TransactionController

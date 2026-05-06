@@ -7,16 +7,12 @@ const CustomerModel = sequelize.define('CustomerModel',{
         primaryKey : true,
         autoIncrement : true
     },
-    cust_login : {
-        type : DataTypes.STRING(255),
-        allowNull : false
-    },
-    cust_pass : {
-        type : DataTypes.STRING(255),
-        allowNull : false
-    },
     cust_name : {
         type : DataTypes.STRING(255),
+        allowNull : false
+    },
+    global_user_id : {
+        type : DataTypes.INTEGER,
         allowNull : false
     },
 }, {

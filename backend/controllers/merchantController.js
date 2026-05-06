@@ -115,7 +115,11 @@ const MerchantController = {
         try{
             const {merchant_id} = req.body
 
-            const queryText = `SELECT merchant_id, merchant_brand_name from merchant where merchant_id = $1`
+            const queryText = `SELECT merchant_id, merchant_brand_name, merchant_active_status, 
+            merchant_ratings, 
+            merchant_reviews,
+            merchant_desc
+             from merchant where merchant_id = $1`
 
             const {rows} = await db.pgQuery(queryText, [merchant_id])
             
@@ -129,8 +133,36 @@ const MerchantController = {
                 message : "No merchants found using PG"
             })
         }
-    }
+    },
 
+    handleOpenClosePg: async (req, res) => {
+        try {
+            const { merchant_id, merchant_active_status } = req.body;
+
+            const queryText = `
+            UPDATE merchant
+            SET merchant_active_status = $2
+            WHERE merchant_id = $1
+            RETURNING *
+            `;
+
+            const values = [merchant_id, merchant_active_status];
+
+            const { rows } = await db.pgQuery(queryText, values);
+
+            res.status(200).json({
+                message: `Merchant ${merchant_id} active_status has been set to ${merchant_active_status}.`,
+                singleMerchantInfo: rows[0],
+            });
+
+        } catch (error) {
+            
+            console.error("Error updating merchant_active_status:", error);
+            res.status(500).json({
+                message: "Failed to update merchant_active_status using PG",
+            });
+        }
+    }
 };
 
 module.exports = MerchantController;

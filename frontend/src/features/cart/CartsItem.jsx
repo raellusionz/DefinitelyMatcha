@@ -30,7 +30,7 @@ function CartsItem ({item, updateQuantity, removeItem}) {
                 {/* Quantity */}
                 <div className="flex items-center border rounded-lg overflow-hidden shrink-0">
                     <button
-                        onClick={() => updateQuantity(item.merchant_pdt_id, "decrease")}
+                        onClick={() => updateQuantity(item.merchant_id, item.merchant_pdt_id, "decrease")}
                         className="px-3 py-1 hover:bg-gray-200"
                     >
                         -
@@ -41,7 +41,7 @@ function CartsItem ({item, updateQuantity, removeItem}) {
                     </span>
                     
                     <button
-                        onClick={() => updateQuantity(item.merchant_pdt_id, "increase")}
+                        onClick={() => updateQuantity(item.merchant_id, item.merchant_pdt_id, "increase")}
                         className="px-3 py-1 hover:bg-gray-200"
                     >
                         +
@@ -54,7 +54,7 @@ function CartsItem ({item, updateQuantity, removeItem}) {
                 </p>
 
                 <button
-                onClick={() => removeItem(item.merchant_pdt_id)}
+                onClick={() => removeItem(item.merchant_id, item.merchant_pdt_id)}
                 className="text-red-500 text-sm w-16 text-right"
                 >
                     Remove

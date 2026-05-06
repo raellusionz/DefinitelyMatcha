@@ -10,6 +10,8 @@ router.post('/getSingleMerchTransactionsPg', merchTransactionController.getSingl
 router.post('/getSingleMerchTransactionsORM', merchTransactionController.getSingleMerchTransactionsORM); 
 router.post('/createNewMerchTransactionsPg', merchTransactionController.createNewMerchTransactionsPg); 
 router.post('/newMerchTransactionsORM', merchTransactionController.createNewMerchTransactionsORM); 
+router.patch('/updateTransactionStatusPg', merchTransactionController.updateTransactionStatusPg)
+router.post('/getDailyRevenueByMerchantPg', merchTransactionController.getDailyRevenueByMerchantPg);
 
 
 

@@ -8,5 +8,6 @@ router.post('/loginMerchant', merchantController.loginMerchant);
 router.post('/logoutMerchant', merchantController.logoutMerchant);
 router.get('/getAllMerchantNames',merchantController.getAllMerchantNamesPg)
 router.post('/getOneMerchantPg', merchantController.getOneMerchantPg)
+router.patch('/handleOpenClosePg', merchantController.handleOpenClosePg)
 
 module.exports = router;  // Export the router

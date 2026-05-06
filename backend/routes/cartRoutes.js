@@ -9,6 +9,7 @@ router.post('/addItemToCartPg', cartController.addItemToCartPg);
 router.delete('/reduceQuantityCartPg', cartController.reduceQuantityCartPg)
 router.delete('/removeCartItemPg', cartController.removeCartItemPg)
 router.post('/getUserCartCheckOutPg', cartController.getUserCartCheckOutPg)
+router.post('/getListOfUserCart', cartController.getListOfUserCart)
 
 
 module.exports = router;  // Export the router
